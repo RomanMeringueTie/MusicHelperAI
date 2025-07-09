@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">MusicHelper</string>
+    <string name="pick_apps">Выберите приложения для прослушивания музыки</string>
+    <string name="save">Сохранить</string>
+    <string name="analysis">Анализ</string>
+    <string name="error">Ошибка</string>
+    <string name="ok">OK</string>
+    <string name="you_have_listened">Вы слушали</string>
+</resources>
