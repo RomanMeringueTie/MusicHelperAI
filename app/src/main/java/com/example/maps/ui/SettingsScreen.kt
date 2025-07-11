@@ -18,11 +18,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.maps.R
+import com.example.maps.data.model.AppInfo
+import com.example.maps.presentation.SettingsViewModel
+import com.example.maps.presentation.State
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,6 +35,28 @@ fun SettingsScreen(
     onThemeChange: () -> Unit,
     onRouteToPickApps: () -> Unit,
     onBack: () -> Unit,
+    viewModel: SettingsViewModel,
+) {
+
+    val state = viewModel.state.collectAsState()
+
+    SettingsScreenImpl(
+        modifier = modifier,
+        onThemeChange = onThemeChange,
+        onRouteToPickApps = onRouteToPickApps,
+        onBack = onBack,
+        state = state.value
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreenImpl(
+    modifier: Modifier = Modifier,
+    onThemeChange: () -> Unit,
+    onRouteToPickApps: () -> Unit,
+    onBack: () -> Unit,
+    state: State<List<AppInfo>>,
 ) {
     Scaffold(
         topBar = {
@@ -84,11 +110,17 @@ fun SettingsScreen(
                         text = stringResource(R.string.pick_app),
                         style = MaterialTheme.typography.titleMedium
                     )
-                    Text(
-                        text = stringResource(R.string.which_apps_to_use),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray
-                    )
+                    when (state) {
+                        is State.Content -> {
+                            val pickedApps =
+                                state.data.joinToString(separator = ", ") { app -> app.appName }
+                            Text(
+                                text = "Сейчас выбраны: $pickedApps",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Gray
+                            )
+                        }
+                    }
                 }
             }
         }

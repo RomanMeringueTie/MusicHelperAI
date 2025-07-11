@@ -99,7 +99,10 @@ fun ListensListScreenImpl(
                         .padding(8.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    ElevatedButton(onClick = { onClick(state.data.toString()) }) {
+                    ElevatedButton(onClick = {
+                        onClick(state.data.joinToString { "${it.artist} - ${it.title}" })
+                    })
+                    {
                         Text(
                             text = stringResource(R.string.analysis),
                             modifier = Modifier.padding(8.dp)

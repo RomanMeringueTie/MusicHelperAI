@@ -17,9 +17,9 @@ class ListensRepositoryImpl(
         return listenDao.getAll()
     }
 
-    override suspend fun insert(listen: ListenFull) {
-        val artistName = listen.artist
-        val title = listen.title
+    override suspend fun insert(listenFull: ListenFull) {
+        val artistName = listenFull.artist
+        val title = listenFull.title
 
         val artistId = artistDao.getIdByName(artistName)
             ?: artistDao.insert(Artist(name = artistName))
@@ -27,12 +27,12 @@ class ListensRepositoryImpl(
         val trackId = trackDao.getIdByTitleAndArtist(title, artistId)
             ?: trackDao.insert(Track(title = title, artistId = artistId))
 
-        val tenMinutesAgo = listen.playedAt - 10 * 60 * 1000
+        val tenMinutesAgo = listenFull.playedAt - 10 * 60 * 1000
 
         val recentCount = listenDao.countRecentListens(trackId, tenMinutesAgo)
 
         if (recentCount == 0) {
-            val listenEntity = Listen(trackId = trackId, playedAt = listen.playedAt)
+            val listenEntity = Listen(trackId = trackId, playedAt = listenFull.playedAt)
             listenDao.insert(listenEntity)
         }
     }

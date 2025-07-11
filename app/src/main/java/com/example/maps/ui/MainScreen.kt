@@ -75,7 +75,8 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
                                 .padding(innerPadding),
                             onThemeChange = viewModel::changeTheme,
                             onRouteToPickApps = { navController.navigate("PICK_APPS") },
-                            onBack = navController::navigateUp
+                            onBack = navController::navigateUp,
+                            viewModel = koinViewModel(),
                         )
                     }
                 }

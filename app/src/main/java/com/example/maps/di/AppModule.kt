@@ -23,6 +23,7 @@ import com.example.maps.presentation.AnalysisViewModel
 import com.example.maps.presentation.ListensListViewModel
 import com.example.maps.presentation.MainViewModel
 import com.example.maps.presentation.PickAppsViewModel
+import com.example.maps.presentation.SettingsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
@@ -71,6 +72,7 @@ val appModule = module {
     singleOf(::GetPermissionUseCaseImpl) { bind<GetPermissionUseCase>() }
     singleOf(::GetPickedAppsUseCaseImpl) { bind<GetPickedAppsUseCase>() }
     viewModelOf(::MainViewModel)
+    viewModelOf(::SettingsViewModel)
     viewModelOf(::PickAppsViewModel)
     viewModel { (listens: String) -> AnalysisViewModel(listens, get()) }
 }
