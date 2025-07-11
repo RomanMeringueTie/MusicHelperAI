@@ -2,6 +2,7 @@ package com.example.maps.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.maps.data.model.Review
 import com.example.maps.domain.GetListensReviewUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,7 @@ class AnalysisViewModel(
     private val getListensReviewUseCase: GetListensReviewUseCase,
 ) :
     ViewModel() {
-    private val _review = MutableStateFlow<State<String>>(State.Initial)
+    private val _review = MutableStateFlow<State<Review>>(State.Loading)
     val review = _review.asStateFlow()
 
     init {

@@ -6,4 +6,6 @@ interface ListensRepository {
     suspend fun getAll(): List<ListenFull>
 
     suspend fun insert(listen: ListenFull)
+
+    suspend fun delete(listen: ListenFull)
 }

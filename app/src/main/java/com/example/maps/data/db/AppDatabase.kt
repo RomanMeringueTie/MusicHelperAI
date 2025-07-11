@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 
 @Database(
     entities = [Listen::class, Artist::class, Track::class],
-    version = 4
+    version = 6
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun ListenDao(): ListenDao

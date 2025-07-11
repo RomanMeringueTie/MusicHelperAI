@@ -6,4 +6,9 @@
     <string name="error">Ошибка</string>
     <string name="ok">OK</string>
     <string name="you_have_listened">Вы слушали</string>
+    <string name="settings">Настройки</string>
+    <string name="change_theme">Сменить тему</string>
+    <string name="light_dark">Светлая / Тёмная</string>
+    <string name="pick_app">Выбрать приложения</string>
+    <string name="which_apps_to_use">С помощью каких приложений Вы слушаете музыку?</string>
 </resources>

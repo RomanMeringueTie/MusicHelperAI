@@ -19,4 +19,5 @@ import androidx.room.PrimaryKey
 data class Listen(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val trackId: Long,
+    val playedAt: Long
 )

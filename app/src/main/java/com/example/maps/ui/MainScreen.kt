@@ -1,4 +1,4 @@
-package com.example.maps.ui.theme
+package com.example.maps.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -12,9 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.maps.presentation.MainViewModel
-import com.example.maps.ui.AnalysisScreen
-import com.example.maps.ui.ListensListScreen
-import com.example.maps.ui.PickAppsScreen
+import com.example.maps.ui.theme.MapsTheme
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
@@ -30,17 +28,16 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
     MapsTheme(darkTheme = isDarkTheme.value) {
         Scaffold(modifier = modifier) { innerPadding ->
             NavHost(navController = navController, startDestination = startDestination) {
-                composable("GET_PERMISSION") {
-
-                }
                 composable("PICK_APPS") {
-                    PickAppsScreen(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding),
-                        viewModel = koinInject(),
-                        onRoute = { navController.navigate("LISTENS_LIST") }
-                    )
+                    EnterAnimation {
+                        PickAppsScreen(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                            viewModel = koinInject(),
+                            onRoute = { navController.navigate("LISTENS_LIST") }
+                        )
+                    }
                 }
                 composable("LISTENS_LIST") {
                     ListensListScreen(
@@ -48,6 +45,7 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
                             .fillMaxSize()
                             .padding(innerPadding),
                         viewModel = koinInject(),
+                        onRouteToSettings = { navController.navigate("SETTINGS") },
                         onClick = { listens: String ->
                             navController.navigate("ANALYSIS/$listens")
                         }
@@ -68,6 +66,18 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
                             )
                         }),
                     )
+                }
+                composable("SETTINGS") {
+                    EnterAnimation {
+                        SettingsScreen(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                            onThemeChange = viewModel::changeTheme,
+                            onRouteToPickApps = { navController.navigate("PICK_APPS") },
+                            onBack = navController::navigateUp
+                        )
+                    }
                 }
             }
         }

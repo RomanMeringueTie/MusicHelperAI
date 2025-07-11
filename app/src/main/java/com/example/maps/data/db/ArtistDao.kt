@@ -10,6 +10,6 @@ interface ArtistDao {
     @Query("SELECT artistId FROM artists WHERE name = :name LIMIT 1")
     suspend fun getIdByName(name: String): Long?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(artist: Artist): Long
 }

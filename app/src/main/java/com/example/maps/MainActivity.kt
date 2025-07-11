@@ -8,7 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.core.app.NotificationManagerCompat
-import com.example.maps.ui.theme.MainScreen
+import com.example.maps.ui.MainScreen
 import org.koin.android.ext.android.get
 
 class MainActivity : ComponentActivity() {

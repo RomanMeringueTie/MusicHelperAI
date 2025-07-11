@@ -10,6 +10,6 @@ interface TrackDao {
     @Query("SELECT trackId FROM tracks WHERE title = :title AND artistId = :artistId LIMIT 1")
     suspend fun getIdByTitleAndArtist(title: String, artistId: Long): Long?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(track: Track): Long
 }

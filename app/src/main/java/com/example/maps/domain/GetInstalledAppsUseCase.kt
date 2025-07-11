@@ -3,5 +3,5 @@ package com.example.maps.domain
 import com.example.maps.data.model.AppInfo
 
 interface GetInstalledAppsUseCase {
-    operator fun invoke(): List<AppInfo>
+    suspend operator fun invoke(): Result<List<AppInfo>>
 }

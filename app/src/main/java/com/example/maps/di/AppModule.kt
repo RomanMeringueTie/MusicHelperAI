@@ -5,6 +5,8 @@ import androidx.room.Room
 import com.example.maps.data.db.AppDatabase
 import com.example.maps.data.repository.ListensRepository
 import com.example.maps.data.repository.ListensRepositoryImpl
+import com.example.maps.domain.DeleteListenUseCase
+import com.example.maps.domain.DeleteListenUseCaseImpl
 import com.example.maps.domain.GetInstalledAppsUseCase
 import com.example.maps.domain.GetInstalledAppsUseCaseImpl
 import com.example.maps.domain.GetListensReviewUseCase
@@ -52,6 +54,7 @@ val appModule = module {
     }
     singleOf(::ListensRepositoryImpl) { bind<ListensRepository>() }
     singleOf(::GetListensUseCaseImpl) { bind<GetListensUseCase>() }
+    singleOf(::DeleteListenUseCaseImpl) { bind<DeleteListenUseCase>() }
     viewModelOf(::ListensListViewModel)
     single {
         androidContext().packageManager

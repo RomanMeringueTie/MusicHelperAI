@@ -13,12 +13,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -29,22 +32,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.example.maps.R
 import com.example.maps.data.model.AppInfo
 import com.example.maps.presentation.PickAppsViewModel
-import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.persistentListOf
+import com.example.maps.presentation.State
 
 @Composable
 fun PickAppsScreen(modifier: Modifier, viewModel: PickAppsViewModel, onRoute: () -> Unit) {
-    val allApps = viewModel.apps.collectAsState()
+    val state = viewModel.apps.collectAsState()
 
     PickAppsScreenImpl(
         modifier = modifier,
-        apps = allApps.value,
+        state = state.value,
         onClick = viewModel::onAppPick,
         onSave = { viewModel.onSave(); onRoute() }
     )
@@ -54,7 +55,7 @@ fun PickAppsScreen(modifier: Modifier, viewModel: PickAppsViewModel, onRoute: ()
 @Composable
 fun PickAppsScreenImpl(
     modifier: Modifier = Modifier,
-    apps: PersistentList<AppInfo>,
+    state: State<List<AppInfo>>,
     onClick: (Int) -> Unit,
     onSave: () -> Unit,
 ) {
@@ -70,28 +71,69 @@ fun PickAppsScreenImpl(
                 modifier = Modifier.fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                Button(
+                ElevatedButton(
                     onClick = onSave,
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(8.dp)
                 ) {
-                    Text(stringResource(R.string.save))
+                    Text(
+                        text = stringResource(R.string.save),
+                        modifier = Modifier.padding(8.dp)
+                    )
                 }
             }
         }
     ) { innerPadding ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
         ) {
-            itemsIndexed(apps) { index, app ->
-                AppItemRow(
-                    app = app,
-                    checked = app.isPicked,
-                    onCheckedChange = { onClick(index) }
-                )
+            when (state) {
+
+                State.Loading -> {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .align(Alignment.Center)
+                    )
+                }
+
+                is State.Content -> {
+                    EnterAnimation {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            itemsIndexed(state.data) { index, app ->
+                                AppItemRow(
+                                    app = app,
+                                    checked = app.isPicked,
+                                    onCheckedChange = { onClick(index) }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                is State.Failure -> {
+                    AlertDialog(
+                        onDismissRequest = { },
+                        title = {
+                            Text("Ошибка")
+                        },
+                        text = {
+                            Text(state.message)
+                        },
+                        confirmButton = {
+                            TextButton(onClick = { }) {
+                                Text("OK")
+                            }
+                        }
+                    )
+                }
             }
+
         }
     }
 }
@@ -136,13 +178,13 @@ fun AppItemRow(
     }
 }
 
-@Composable
-@Preview(showBackground = true)
-fun PickAppsScreen_Preview() {
-    PickAppsScreenImpl(
-        modifier = Modifier.fillMaxSize(),
-        apps = persistentListOf(),
-        onClick = {},
-        onSave = {}
-    )
-}
+//@Composable
+//@Preview(showBackground = true)
+//fun PickAppsScreen_Preview() {
+//    PickAppsScreenImpl(
+//        modifier = Modifier.fillMaxSize(),
+//        apps = persistentListOf(),
+//        onClick = {},
+//        onSave = {}
+//    )
+//}

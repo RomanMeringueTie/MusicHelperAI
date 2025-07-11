@@ -1,16 +1,21 @@
 package com.example.maps.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -22,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.maps.R
+import com.example.maps.data.model.Review
 import com.example.maps.presentation.AnalysisViewModel
 import com.example.maps.presentation.State
 
@@ -39,7 +45,7 @@ fun AnalysisScreen(modifier: Modifier, viewModel: AnalysisViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AnalysisScreenImpl(modifier: Modifier, state: State<String>, onDismissError: () -> Unit) {
+fun AnalysisScreenImpl(modifier: Modifier, state: State<Review>, onDismissError: () -> Unit) {
 
     Scaffold(
         modifier = modifier,
@@ -53,9 +59,9 @@ fun AnalysisScreenImpl(modifier: Modifier, state: State<String>, onDismissError:
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
             when (state) {
-                State.Initial -> {}
 
                 State.Loading -> {
                     CircularProgressIndicator(
@@ -66,13 +72,26 @@ fun AnalysisScreenImpl(modifier: Modifier, state: State<String>, onDismissError:
                 }
 
                 is State.Content -> {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                            .verticalScroll(rememberScrollState()),
-                    ) {
-                        Text(text = state.data, modifier = Modifier.padding(16.dp))
+                    val items = listOf(
+                        Pair("Характер", state.data.traits),
+                        Pair("Вкус", state.data.taste),
+                        Pair("Рекомендации", state.data.recommendations),
+                    )
+                    EnterAnimation {
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            items(items) {
+                                ReviewCard(
+                                    modifier = Modifier.fillParentMaxWidth(),
+                                    title = it.first,
+                                    body = it.second
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -93,6 +112,24 @@ fun AnalysisScreenImpl(modifier: Modifier, state: State<String>, onDismissError:
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ReviewCard(modifier: Modifier, title: String, body: String) {
+    Card(
+        modifier = modifier
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineLarge
+            )
+            Text(
+                text = body,
+                modifier = Modifier.padding(top = 8.dp),
+            )
         }
     }
 }

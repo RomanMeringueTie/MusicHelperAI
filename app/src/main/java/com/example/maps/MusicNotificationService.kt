@@ -22,7 +22,11 @@ class MusicNotificationService : NotificationListenerService() {
             val track = extras.getString("android.title")
             if (artist != null && track != null) {
                 val repository: ListensRepository = get()
-                val listen = ListenFull(artist = artist, title = track)
+                val listen = ListenFull(
+                    artist = artist,
+                    title = track,
+                    playedAt = System.currentTimeMillis()
+                )
                 scope.launch { repository.insert(listen) }
             }
         }
