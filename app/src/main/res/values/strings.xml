@@ -11,4 +11,5 @@
     <string name="light_dark">Светлая / Тёмная</string>
     <string name="pick_app">Выбрать приложения</string>
     <string name="which_apps_to_use">С помощью каких приложений Вы слушаете музыку?</string>
+    <string name="stats">Статистика</string>
 </resources>

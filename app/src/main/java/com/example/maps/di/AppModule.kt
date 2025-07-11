@@ -17,6 +17,8 @@ import com.example.maps.domain.GetPermissionUseCase
 import com.example.maps.domain.GetPermissionUseCaseImpl
 import com.example.maps.domain.GetPickedAppsUseCase
 import com.example.maps.domain.GetPickedAppsUseCaseImpl
+import com.example.maps.domain.InsertListenUseCase
+import com.example.maps.domain.InsertListenUseCaseImpl
 import com.example.maps.domain.SavePickedAppsUseCase
 import com.example.maps.domain.SavePickedAppsUseCaseImpl
 import com.example.maps.presentation.AnalysisViewModel
@@ -56,6 +58,7 @@ val appModule = module {
     singleOf(::ListensRepositoryImpl) { bind<ListensRepository>() }
     singleOf(::GetListensUseCaseImpl) { bind<GetListensUseCase>() }
     singleOf(::DeleteListenUseCaseImpl) { bind<DeleteListenUseCase>() }
+    singleOf(::InsertListenUseCaseImpl) { bind<InsertListenUseCase>() }
     viewModelOf(::ListensListViewModel)
     single {
         androidContext().packageManager

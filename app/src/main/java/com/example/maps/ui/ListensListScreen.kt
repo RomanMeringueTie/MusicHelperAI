@@ -6,13 +6,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
@@ -20,8 +23,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -54,13 +59,21 @@ fun ListensListScreen(
     onRouteToSettings: () -> Unit,
 ) {
     val listens = viewModel.listens.collectAsState()
+    val indexToDelete = viewModel.indexToDelete.collectAsState()
+    val isInsertDialogVisible = viewModel.isInsertDialogShown.collectAsState()
 
     ListensListScreenImpl(
         modifier = modifier,
         state = listens.value,
-        onClick = onClick,
+        onAnalyze = onClick,
+        onStats = {},
+        indexToDelete = indexToDelete.value,
         onRouteToSettings = onRouteToSettings,
-        onDelete = viewModel::deleteListen
+        onIndexChange = viewModel::setIndexToDelete,
+        onDelete = viewModel::deleteListen,
+        onInsert = viewModel::insertListen,
+        onChangeInsertDialogVisibility = viewModel::changeInsertDialogVisibility,
+        isInsertDialogVisible = isInsertDialogVisible.value
     )
 
 }
@@ -72,9 +85,15 @@ fun ListensListScreenImpl(
     modifier: Modifier = Modifier,
     state: State<List<ListenFull>>,
     onDismissError: () -> Unit = {},
-    onClick: (String) -> Unit,
+    onAnalyze: (String) -> Unit,
+    onStats: () -> Unit,
     onRouteToSettings: () -> Unit,
-    onDelete: (Int) -> Unit,
+    indexToDelete: Int?,
+    onIndexChange: (Int?) -> Unit,
+    onDelete: () -> Unit,
+    onInsert: (String, String) -> Unit,
+    onChangeInsertDialogVisibility: () -> Unit,
+    isInsertDialogVisible: Boolean,
 ) {
     Scaffold(
         modifier = modifier,
@@ -93,18 +112,29 @@ fun ListensListScreenImpl(
         },
         bottomBar = {
             if (state is State.Content) {
-                Box(
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp),
-                    contentAlignment = Alignment.Center
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    FloatingActionButton(
+                        onClick = onChangeInsertDialogVisibility,
+                    ) {
+                        Icon(Icons.Filled.Add, "Add listen")
+                    }
                     ElevatedButton(onClick = {
-                        onClick(state.data.joinToString { "${it.artist} - ${it.title}" })
-                    })
-                    {
+                        onAnalyze(state.data.joinToString { "${it.artist} - ${it.title}" })
+                    }) {
                         Text(
                             text = stringResource(R.string.analysis),
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                    ElevatedButton(onClick = onStats) {
+                        Text(
+                            text = stringResource(R.string.stats),
                             modifier = Modifier.padding(8.dp)
                         )
                     }
@@ -128,7 +158,15 @@ fun ListensListScreenImpl(
 
                 is State.Content -> {
                     EnterAnimation {
-                        ListensListContent(listens = state.data, onDelete = onDelete)
+                        ListensListContent(
+                            listens = state.data,
+                            onDelete = onDelete,
+                            indexToDelete = indexToDelete,
+                            onIndexChange = onIndexChange,
+                            onInsert = onInsert,
+                            onDismissInsert = onChangeInsertDialogVisibility,
+                            isInsertDialogVisible = isInsertDialogVisible,
+                        )
                     }
                 }
 
@@ -155,8 +193,15 @@ fun ListensListScreenImpl(
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-private fun ListensListContent(listens: List<ListenFull>, onDelete: (Int) -> Unit) {
-    var indexToDelete by remember { mutableStateOf<Int?>(null) }
+private fun ListensListContent(
+    listens: List<ListenFull>,
+    onDelete: () -> Unit,
+    isInsertDialogVisible: Boolean,
+    onInsert: (String, String) -> Unit,
+    onDismissInsert: () -> Unit,
+    indexToDelete: Int?,
+    onIndexChange: (Int?) -> Unit,
+) {
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -190,7 +235,7 @@ private fun ListensListContent(listens: List<ListenFull>, onDelete: (Int) -> Uni
                     val format = SimpleDateFormat("HH:mm")
                     val time = format.format(date)
                     Column {
-                        IconButton(onClick = { indexToDelete = index }) {
+                        IconButton(onClick = { onIndexChange(index) }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 contentDescription = "Delete"
@@ -207,10 +252,18 @@ private fun ListensListContent(listens: List<ListenFull>, onDelete: (Int) -> Uni
             indexToDelete?.let {
                 DeleteDialog(
                     onConfirm = {
-                        onDelete(indexToDelete!!)
-                        indexToDelete = null
+                        onDelete()
                     },
-                    onDismiss = { indexToDelete = null }
+                    onDismiss = { onIndexChange(null) }
+                )
+            }
+            if (isInsertDialogVisible) {
+                InsertTrackDialog(
+                    onConfirm = { artist, title ->
+                        onInsert(artist, title)
+                        onDismissInsert()
+                    },
+                    onDismiss = onDismissInsert
                 )
             }
         }
@@ -237,14 +290,66 @@ private fun DeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
 }
 
 @Composable
+private fun InsertTrackDialog(
+    onConfirm: (String, String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var artist by remember { mutableStateOf("") }
+    var track by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Добавить трек") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = artist,
+                    onValueChange = { artist = it },
+                    label = { Text("Исполнитель") },
+                    singleLine = true
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = track,
+                    onValueChange = { track = it },
+                    label = { Text("Композиция") },
+                    singleLine = true
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirm(artist, track)
+                },
+                enabled = artist.isNotBlank() && track.isNotBlank()
+            ) {
+                Text("Сохранить")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Отмена")
+            }
+        }
+    )
+}
+
+@Composable
 @Preview(showBackground = true)
 fun Preview_HomeScreen() {
     ListensListScreenImpl(
         modifier = Modifier.fillMaxSize(),
         state = State.Content(persistentListOf()),
-        onClick = {},
+        onStats = {},
+        onAnalyze = {},
         onDismissError = {},
         onRouteToSettings = {},
-        onDelete = {}
+        indexToDelete = null,
+        onIndexChange = {},
+        onDelete = {},
+        onInsert = {} as (String, String) -> Unit,
+        onChangeInsertDialogVisibility = {},
+        isInsertDialogVisible = false
     )
 }
