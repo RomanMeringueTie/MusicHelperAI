@@ -26,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -119,24 +120,28 @@ fun ListensListScreenImpl(
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    if (state.data.isNotEmpty()) {
+                        ElevatedButton(onClick = {
+                            onAnalyze(state.data.joinToString { "${it.artist} - ${it.title}" })
+                        }) {
+                            Text(
+                                text = stringResource(R.string.analysis),
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
+                    }
                     FloatingActionButton(
                         onClick = onChangeInsertDialogVisibility,
                     ) {
                         Icon(Icons.Filled.Add, "Add listen")
                     }
-                    ElevatedButton(onClick = {
-                        onAnalyze(state.data.joinToString { "${it.artist} - ${it.title}" })
-                    }) {
-                        Text(
-                            text = stringResource(R.string.analysis),
-                            modifier = Modifier.padding(8.dp)
-                        )
-                    }
-                    ElevatedButton(onClick = onStats) {
-                        Text(
-                            text = stringResource(R.string.stats),
-                            modifier = Modifier.padding(8.dp)
-                        )
+                    if (state.data.isNotEmpty()) {
+                        ElevatedButton(onClick = onStats) {
+                            Text(
+                                text = stringResource(R.string.stats),
+                                modifier = Modifier.padding(8.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -203,70 +208,87 @@ private fun ListensListContent(
     onIndexChange: (Int?) -> Unit,
 ) {
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        itemsIndexed(items = listens) { index, listen ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Row(
+    if (listens.isEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                "Тут будут прослушанные вами треки",
+                style = MaterialTheme.typography.headlineMedium
+            )
+            Text("Послушайте музыку в ваших приложениях или добавьте вручную", color = Color.Gray)
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            itemsIndexed(items = listens) { index, listen ->
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(0.7f)
-                            .padding(16.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(
-                            text = listen.artist,
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(0.7f)
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                text = listen.artist,
+                            )
 
-                        Text(
-                            text = listen.title,
-                            color = Color.Gray
-                        )
-                    }
-                    val date = Date(listen.playedAt)
-                    val format = SimpleDateFormat("HH:mm")
-                    val time = format.format(date)
-                    Column {
-                        IconButton(onClick = { onIndexChange(index) }) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete"
+                            Text(
+                                text = listen.title,
+                                color = Color.Gray
                             )
                         }
-                        Text(
-                            text = time,
-                            color = Color.Gray
-                        )
-                    }
+                        val date = Date(listen.playedAt)
+                        val format = SimpleDateFormat("HH:mm")
+                        val time = format.format(date)
+                        Column {
+                            IconButton(onClick = { onIndexChange(index) }) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete"
+                                )
+                            }
+                            Text(
+                                text = time,
+                                color = Color.Gray
+                            )
+                        }
 
+                    }
                 }
             }
-            indexToDelete?.let {
-                DeleteDialog(
-                    onConfirm = {
-                        onDelete()
-                    },
-                    onDismiss = { onIndexChange(null) }
-                )
-            }
-            if (isInsertDialogVisible) {
-                InsertTrackDialog(
-                    onConfirm = { artist, title ->
-                        onInsert(artist, title)
-                        onDismissInsert()
-                    },
-                    onDismiss = onDismissInsert
-                )
-            }
+
         }
+    }
+    indexToDelete?.let {
+        DeleteDialog(
+            onConfirm = {
+                onDelete()
+            },
+            onDismiss = { onIndexChange(null) }
+        )
+    }
+    if (isInsertDialogVisible) {
+        InsertTrackDialog(
+            onConfirm = { artist, title ->
+                onInsert(artist, title)
+                onDismissInsert()
+            },
+            onDismiss = onDismissInsert
+        )
     }
 }
 
