@@ -3,9 +3,12 @@ package com.example.maps.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -19,12 +22,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.example.maps.R
 import com.example.maps.data.model.AppInfo
+import com.example.maps.data.model.UserModel
 import com.example.maps.presentation.SettingsViewModel
 import com.example.maps.presentation.State
 
@@ -81,6 +89,24 @@ fun SettingsScreenImpl(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                AsyncImage(
+                    model = UserModel.picture ?: "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
+                    contentDescription = "Profile Image",
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                Text(
+                    text = UserModel.name ?: "Unknown Name",
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,6 +125,7 @@ fun SettingsScreenImpl(
                     )
                 }
             }
+
             Card(
                 modifier = Modifier
                     .fillMaxWidth()

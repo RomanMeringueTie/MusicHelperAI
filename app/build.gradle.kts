@@ -44,6 +44,9 @@ android {
 
 dependencies {
 
+    // Firebase Auth
+    implementation(libs.firebase.ui.auth)
+
     // Firebase AI
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.ai)
@@ -51,6 +54,10 @@ dependencies {
     // Koin
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+
+    // Coil
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     // Kotlinx DateTime
     implementation(libs.kotlinx.datetime)
@@ -64,6 +71,7 @@ dependencies {
     // Immutable Collections
     implementation(libs.kotlinx.collections.immutable)
 
+    implementation(libs.androidx.foundation)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -27,7 +27,15 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
 
     MapsTheme(darkTheme = isDarkTheme.value) {
         Scaffold(modifier = modifier) { innerPadding ->
-            NavHost(navController = navController, startDestination = startDestination) {
+            NavHost(navController = navController, startDestination = "LOG_IN") {
+                composable("LOG_IN") {
+                    LoginScreen(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding),
+                        onRoute = { navController.navigate(startDestination) }
+                    )
+                }
                 composable("PICK_APPS") {
                     EnterAnimation {
                         PickAppsScreen(

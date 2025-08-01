@@ -1,14 +1,15 @@
 package com.example.maps.ui
 
-import androidx.compose.foundation.layout.Arrangement
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -44,6 +45,7 @@ fun AnalysisScreen(modifier: Modifier, viewModel: AnalysisViewModel) {
     )
 }
 
+@SuppressLint("ConfigurationScreenWidthHeight")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalysisScreenImpl(modifier: Modifier, state: State<Review>, onDismissError: () -> Unit) {
@@ -79,20 +81,21 @@ fun AnalysisScreenImpl(modifier: Modifier, state: State<Review>, onDismissError:
                         Pair("Рекомендации", state.data.recommendations),
                     )
                     EnterAnimation {
-                        LazyRow(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            items(items) {
-                                val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+                        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+                        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+
+                        val pagerState = rememberPagerState(pageCount = {
+                            3
+                        })
+                        HorizontalPager(state = pagerState) { page ->
+                            items.forEach {
                                 ReviewCard(
                                     modifier = Modifier
-                                        .fillParentMaxHeight()
+                                        .padding(16.dp)
+                                        .height(screenHeight - 256.dp)
                                         .width(screenWidth - 32.dp),
-                                    title = it.first,
-                                    body = it.second
+                                    title = items[page].first,
+                                    body = items[page].second
                                 )
                             }
                         }
@@ -123,11 +126,13 @@ fun AnalysisScreenImpl(modifier: Modifier, state: State<Review>, onDismissError:
 @Composable
 private fun ReviewCard(modifier: Modifier, title: String, body: String) {
     Card(
-        modifier = modifier
+        modifier = modifier.verticalScroll(rememberScrollState())
     ) {
-        Column(modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.headlineLarge
