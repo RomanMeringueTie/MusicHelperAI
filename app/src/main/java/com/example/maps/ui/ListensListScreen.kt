@@ -56,7 +56,8 @@ import java.util.Date
 fun ListensListScreen(
     modifier: Modifier,
     viewModel: ListensListViewModel,
-    onClick: (String) -> Unit,
+    onAnalyze: (String) -> Unit,
+    onStats: () -> Unit,
     onRouteToSettings: () -> Unit,
 ) {
     val listens = viewModel.listens.collectAsState()
@@ -66,8 +67,8 @@ fun ListensListScreen(
     ListensListScreenImpl(
         modifier = modifier,
         state = listens.value,
-        onAnalyze = onClick,
-        onStats = {},
+        onAnalyze = onAnalyze,
+        onStats = onStats,
         indexToDelete = indexToDelete.value,
         onRouteToSettings = onRouteToSettings,
         onIndexChange = viewModel::setIndexToDelete,

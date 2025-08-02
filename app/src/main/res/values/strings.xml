@@ -12,4 +12,8 @@
     <string name="pick_app">Выбрать приложения</string>
     <string name="which_apps_to_use">С помощью каких приложений Вы слушаете музыку?</string>
     <string name="stats">Статистика</string>
+    <string name="app_search">Поиск приложений</string>
+    <string name="top_artist">%1$s: %2$s треков</string>
+    <string name="top_track">%1$s - %2$s: %3$s прослушиваний</string>
+    <string name="listens_count">Прослушивания: %1$s</string>
 </resources>

@@ -14,7 +14,6 @@ import androidx.navigation.navArgument
 import com.example.maps.presentation.MainViewModel
 import com.example.maps.ui.theme.MapsTheme
 import org.koin.androidx.compose.koinViewModel
-import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
 @Composable
@@ -42,7 +41,7 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(innerPadding),
-                            viewModel = koinInject(),
+                            viewModel = koinViewModel(),
                             onRoute = { navController.navigate("LISTENS_LIST") }
                         )
                     }
@@ -52,11 +51,12 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding),
-                        viewModel = koinInject(),
+                        viewModel = koinViewModel(),
                         onRouteToSettings = { navController.navigate("SETTINGS") },
-                        onClick = { listens: String ->
+                        onAnalyze = { listens: String ->
                             navController.navigate("ANALYSIS/$listens")
-                        }
+                        },
+                        onStats = { navController.navigate("STATS") }
                     )
                 }
                 composable(route = "ANALYSIS/{listens}", arguments = listOf(navArgument("listens") {
@@ -74,6 +74,16 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
                             )
                         }),
                     )
+                }
+                composable("STATS") {
+                    EnterAnimation {
+                        StatsScreen(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                            viewModel = koinViewModel(),
+                        )
+                    }
                 }
                 composable("SETTINGS") {
                     EnterAnimation {

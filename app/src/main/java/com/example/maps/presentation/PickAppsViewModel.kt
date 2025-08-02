@@ -7,7 +7,10 @@ import com.example.maps.domain.GetInstalledAppsUseCase
 import com.example.maps.domain.SavePickedAppsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -17,7 +20,21 @@ class PickAppsViewModel(
 ) : ViewModel() {
 
     private val _apps = MutableStateFlow<State<List<AppInfo>>>(State.Loading)
-    val apps = _apps.asStateFlow()
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
+    val apps: StateFlow<State<List<AppInfo>>> = combine(_apps, _searchQuery) { state, query ->
+        when (state) {
+            is State.Content -> {
+                val filtered = state.data.filter {
+                    it.appName.contains(query, ignoreCase = true)
+                }
+                State.Content(filtered)
+            }
+
+            else -> state
+        }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(), State.Loading)
 
     init {
         viewModelScope.launch {
@@ -33,20 +50,29 @@ class PickAppsViewModel(
         }
     }
 
-    fun onAppPick(position: Int) {
-        val pickedApp = (_apps.value as State.Content).data[position]
-        val updatedApp = pickedApp.copy(isPicked = !pickedApp.isPicked)
-        val updatedList = (_apps.value as State.Content).data.toMutableList().apply {
-            this[position] = updatedApp
+    fun onSearchQueryChanged(query: String) {
+        _searchQuery.value = query
+    }
+
+    fun onAppPick(packageName: String) {
+        val current = _apps.value
+        if (current is State.Content) {
+            val actualList = current.data
+            val pickedApp = actualList.find { it.packageName == packageName }!!
+            val updatedApp = pickedApp.copy(isPicked = !pickedApp.isPicked)
+            val updatedList = actualList.toMutableList().apply {
+                val position = actualList.indexOf(pickedApp)
+                this[position] = updatedApp
+            }
+            _apps.value = State.Content(updatedList)
         }
-        _apps.value = State.Content(updatedList)
     }
 
     fun onSave() {
-        val pickedPackages = (_apps.value as State.Content).data
-            .filter { it.isPicked == true }
-            .map { it.packageName }
-            .toSet()
-        savePickedAppsUseCase(pickedPackages)
+        val pickedPackages = (_apps.value as? State.Content)?.data
+            ?.filter { it.isPicked }
+            ?.map { it.packageName }
+            ?.toSet()
+        pickedPackages?.let { savePickedAppsUseCase(it) }
     }
 }

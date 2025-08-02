@@ -17,6 +17,10 @@ import com.example.maps.domain.GetPermissionUseCase
 import com.example.maps.domain.GetPermissionUseCaseImpl
 import com.example.maps.domain.GetPickedAppsUseCase
 import com.example.maps.domain.GetPickedAppsUseCaseImpl
+import com.example.maps.domain.GetTopArtistsUseCase
+import com.example.maps.domain.GetTopArtistsUseCaseImpl
+import com.example.maps.domain.GetTopTracksUseCase
+import com.example.maps.domain.GetTopTracksUseCaseImpl
 import com.example.maps.domain.InsertListenUseCase
 import com.example.maps.domain.InsertListenUseCaseImpl
 import com.example.maps.domain.SavePickedAppsUseCase
@@ -26,6 +30,7 @@ import com.example.maps.presentation.ListensListViewModel
 import com.example.maps.presentation.MainViewModel
 import com.example.maps.presentation.PickAppsViewModel
 import com.example.maps.presentation.SettingsViewModel
+import com.example.maps.presentation.StatsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
@@ -74,8 +79,11 @@ val appModule = module {
     singleOf(::SavePickedAppsUseCaseImpl) { bind<SavePickedAppsUseCase>() }
     singleOf(::GetPermissionUseCaseImpl) { bind<GetPermissionUseCase>() }
     singleOf(::GetPickedAppsUseCaseImpl) { bind<GetPickedAppsUseCase>() }
+    singleOf(::GetTopArtistsUseCaseImpl) { bind<GetTopArtistsUseCase>() }
+    singleOf(::GetTopTracksUseCaseImpl) { bind<GetTopTracksUseCase>() }
     viewModelOf(::MainViewModel)
     viewModelOf(::SettingsViewModel)
     viewModelOf(::PickAppsViewModel)
     viewModel { (listens: String) -> AnalysisViewModel(listens, get()) }
+    viewModelOf(::StatsViewModel)
 }
