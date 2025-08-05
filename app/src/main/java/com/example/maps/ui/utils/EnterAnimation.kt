@@ -1,4 +1,4 @@
-package com.example.maps.ui
+package com.example.maps.ui.utils
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.MutableTransitionState

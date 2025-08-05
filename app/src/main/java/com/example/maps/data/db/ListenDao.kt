@@ -46,7 +46,7 @@ interface ListenDao {
     JOIN artists ON tracks.artistId = artists.artistId
     GROUP BY artists.artistId, artists.name
     ORDER BY trackCount DESC
-    LIMIT 3
+    LIMIT 5
 """)
     suspend fun getTopArtists(): List<TopArtist>
 
@@ -57,7 +57,7 @@ interface ListenDao {
     JOIN artists ON tracks.artistId = artists.artistId
     GROUP BY tracks.trackId, tracks.title, artists.name
     ORDER BY listenCount DESC
-    LIMIT 3
+    LIMIT 5
 """)
     suspend fun getTopTracks(): List<TopTrack>
 }

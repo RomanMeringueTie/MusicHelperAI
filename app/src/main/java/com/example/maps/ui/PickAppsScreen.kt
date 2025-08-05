@@ -46,6 +46,7 @@ import com.example.maps.R
 import com.example.maps.data.model.AppInfo
 import com.example.maps.presentation.PickAppsViewModel
 import com.example.maps.presentation.State
+import com.example.maps.ui.utils.EnterAnimation
 
 @Composable
 fun PickAppsScreen(modifier: Modifier, viewModel: PickAppsViewModel, onRoute: () -> Unit) {
@@ -132,7 +133,7 @@ fun PickAppsScreenImpl(
                         LazyColumn(
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            items(state.data) {app ->
+                            items(state.data) { app ->
                                 AppItemRow(
                                     app = app,
                                     checked = app.isPicked,

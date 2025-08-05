@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Warning
@@ -26,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,20 +43,45 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.maps.R
+import com.example.maps.data.model.TopArtist
+import com.example.maps.data.model.TopTrack
 import com.example.maps.presentation.State
 import com.example.maps.presentation.StatsViewModel
 
+@Composable
+fun StatsScreen(modifier: Modifier, viewModel: StatsViewModel, onBack: () -> Unit) {
+    val state = viewModel.state.collectAsState()
+
+    StatsScreenImpl(
+        modifier = modifier,
+        state = state.value,
+        onBack = onBack
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StatsScreen(modifier: Modifier, viewModel: StatsViewModel) {
-    val state = viewModel.state.collectAsState()
+private fun StatsScreenImpl(
+    modifier: Modifier,
+    state: State<Pair<List<TopArtist>, List<TopTrack>>>,
+    onBack: () -> Unit,
+) {
+
 
     Scaffold(
         modifier = modifier,
         topBar = {
             Column {
                 TopAppBar(
-                    title = { Text(stringResource(R.string.stats)) }
+                    title = { Text(stringResource(R.string.stats)) },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Navigate Back"
+                            )
+                        }
+                    }
                 )
             }
         }) { innerPadding ->
@@ -64,7 +91,7 @@ fun StatsScreen(modifier: Modifier, viewModel: StatsViewModel) {
                 .fillMaxSize()
         ) {
 
-            when (state.value) {
+            when (state) {
                 is State.Loading -> {
                     Box(
                         modifier = Modifier
@@ -101,7 +128,7 @@ fun StatsScreen(modifier: Modifier, viewModel: StatsViewModel) {
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = (state.value as State.Failure).message,
+                                text = state.message,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onErrorContainer,
                                 textAlign = TextAlign.Center
@@ -116,13 +143,12 @@ fun StatsScreen(modifier: Modifier, viewModel: StatsViewModel) {
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // Секция топ исполнителей
                         item {
                             StatsSection(
                                 title = "Топ артистов",
                                 icon = Icons.Default.Person
                             ) {
-                                val artists = (state.value as State.Content).data.first
+                                val artists = state.data.first
                                 artists.forEachIndexed { index, (artistName, trackCount) ->
 
                                     ArtistStatsItem(
@@ -141,13 +167,12 @@ fun StatsScreen(modifier: Modifier, viewModel: StatsViewModel) {
                             }
                         }
 
-                        // Секция топ треков
                         item {
                             StatsSection(
                                 title = "Топ треков",
                                 icon = Icons.Default.PlayArrow
                             ) {
-                                val tracks = (state.value as State.Content).data.second
+                                val tracks = state.data.second
                                 tracks.forEachIndexed { index, (trackName, artistName, listenCount) ->
                                     TrackStatsItem(
                                         position = index + 1,
