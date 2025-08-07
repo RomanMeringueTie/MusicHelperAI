@@ -30,6 +30,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -89,7 +91,7 @@ fun ListensListScreen(
     )
 }
 
-@SuppressLint("SimpleDateFormat")
+@SuppressLint("SimpleDateFormat", "AutoboxingStateValueProperty")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListensListScreenImpl(
@@ -123,31 +125,42 @@ fun ListensListScreenImpl(
         },
         bottomBar = {
             if (state is State.Content) {
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if (state.data.isNotEmpty()) {
-                        ElevatedButton(onClick = onAnalyze) {
-                            Text(
-                                text = stringResource(R.string.analysis),
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                        ElevatedButton(onClick = onStats) {
-                            Text(
-                                text = stringResource(R.string.stats),
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
-                    }
-
-                    FloatingActionButton(
-                        onClick = onChangeInsertDialogVisibility,
+                Column {
+                    HorizontalDivider()
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Filled.Add, "Add listen")
+                        if (state.data.isNotEmpty()) {
+                            ElevatedButton(onClick = onAnalyze) {
+                                Text(
+                                    text = stringResource(R.string.analysis),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                            ElevatedButton(onClick = onStats) {
+                                Text(
+                                    text = stringResource(R.string.stats),
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                        }
+                        FloatingActionButton(
+                            onClick = onChangeInsertDialogVisibility,
+                            elevation = FloatingActionButtonDefaults.elevation(
+                                defaultElevation = 2.dp,
+                                pressedElevation = 2.dp,
+                                focusedElevation = 2.dp,
+                                hoveredElevation = 2.dp
+                            )
+                        ) {
+                            Icon(Icons.Filled.Add, "Add listen")
+                        }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
         }
