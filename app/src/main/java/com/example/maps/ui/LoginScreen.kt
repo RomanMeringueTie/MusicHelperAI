@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.example.maps.R
 import com.example.maps.data.model.UserModel
 import com.example.maps.ui.utils.TypeWritingText
-import com.example.maps.utils.getGreeting
+import com.example.maps.ui.utils.getGreeting
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult

@@ -16,7 +16,9 @@
     <string name="top_artist">%1$s: %2$s треков</string>
     <string name="top_track">%1$s - %2$s: %3$s прослушиваний</string>
     <string name="listens_count">Прослушивания: %1$s</string>
-    <string name="analyzing">Анализируем ваши музыкальные предпочтения...</string>
+    <string name="analyzing">Анализируем ваши музыкальные предпочтения…</string>
     <string name="recomendations">Рекомендации</string>
-    <string name="auth">Авторизация...</string>
+    <string name="auth">Авторизация…</string>
+    <string name="notification_content">Заходите посмотреть данные о прослушиваниях</string>
+    <string name="notification_title">%1$s - отличный трек!</string>
 </resources>

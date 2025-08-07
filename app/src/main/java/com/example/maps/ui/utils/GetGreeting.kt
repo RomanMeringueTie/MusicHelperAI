@@ -1,4 +1,4 @@
-package com.example.maps.utils
+package com.example.maps.ui.utils
 
 import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
