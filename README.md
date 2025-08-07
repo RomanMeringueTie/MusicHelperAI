@@ -1,6 +1,9 @@
 # Music Helper
 ### Приложение, помогающее собирать статистику, анализировать и давать рекомендации по прослушанной музыке
 
+## APK Файл
+#### [app-release.apk](app-release.apk)
+
 ## Стек
 #### Kotlin, Kotlin Coroutines
 #### AI - Gemini Firebase AI Logic SDK
