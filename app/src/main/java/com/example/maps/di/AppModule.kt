@@ -13,6 +13,8 @@ import com.example.maps.domain.GetListensReviewUseCase
 import com.example.maps.domain.GetListensReviewUseCaseImpl
 import com.example.maps.domain.GetListensUseCase
 import com.example.maps.domain.GetListensUseCaseImpl
+import com.example.maps.domain.GetNotificationSettingUseCase
+import com.example.maps.domain.GetNotificationSettingUseCaseImpl
 import com.example.maps.domain.GetPermissionUseCase
 import com.example.maps.domain.GetPermissionUseCaseImpl
 import com.example.maps.domain.GetPickedAppsUseCase
@@ -25,6 +27,8 @@ import com.example.maps.domain.InsertListenUseCase
 import com.example.maps.domain.InsertListenUseCaseImpl
 import com.example.maps.domain.SavePickedAppsUseCase
 import com.example.maps.domain.SavePickedAppsUseCaseImpl
+import com.example.maps.domain.SetNotificationSettingUseCase
+import com.example.maps.domain.SetNotificationSettingUseCaseImpl
 import com.example.maps.presentation.AnalysisViewModel
 import com.example.maps.presentation.ListensListViewModel
 import com.example.maps.presentation.MainViewModel
@@ -73,6 +77,8 @@ val appModule = module {
     single {
         androidContext().contentResolver
     }
+    singleOf(::GetNotificationSettingUseCaseImpl) { bind<GetNotificationSettingUseCase>() }
+    singleOf(::SetNotificationSettingUseCaseImpl) { bind<SetNotificationSettingUseCase>() }
     singleOf(::GetListensReviewUseCaseImpl) { bind<GetListensReviewUseCase>() }
     singleOf(::GetInstalledAppsUseCaseImpl) { bind<GetInstalledAppsUseCase>() }
     singleOf(::SavePickedAppsUseCaseImpl) { bind<SavePickedAppsUseCase>() }

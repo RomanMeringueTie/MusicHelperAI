@@ -21,4 +21,10 @@
     <string name="auth">Авторизация…</string>
     <string name="notification_content">Заходите посмотреть данные о прослушиваниях</string>
     <string name="notification_title">%1$s - отличный трек!</string>
+    <string name="apps_not_picked">Приложения не выбраны</string>
+    <string name="now_picked_apps">Сейчас выбраны: %1$s</string>
+    <string name="user">Пользователь</string>
+    <string name="unknown_name">Unknown Name</string>
+    <string name="profile">Профиль</string>
+    <string name="app">Приложение</string>
 </resources>

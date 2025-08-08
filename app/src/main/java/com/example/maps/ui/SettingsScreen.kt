@@ -20,9 +20,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -42,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,14 +64,17 @@ fun SettingsScreen(
     onBack: () -> Unit,
     viewModel: SettingsViewModel,
 ) {
-    val state = viewModel.state.collectAsState()
+    val pickedApps = viewModel.pickedApps.collectAsState()
+    val isNotificationsAllowed = viewModel.isNotificationsAllowed.collectAsState()
 
     SettingsScreenImpl(
         modifier = modifier,
         onThemeChange = onThemeChange,
         onRouteToPickApps = onRouteToPickApps,
         onBack = onBack,
-        state = state.value
+        pickedApps = pickedApps.value,
+        isNotificationsAllowed = isNotificationsAllowed.value,
+        onNotificationSettingChange = viewModel::onNotificationSettingChange,
     )
 }
 
@@ -80,12 +85,14 @@ fun SettingsScreenImpl(
     onThemeChange: () -> Unit,
     onRouteToPickApps: () -> Unit,
     onBack: () -> Unit,
-    state: State<List<AppInfo>>,
+    pickedApps: State<List<AppInfo>>,
+    isNotificationsAllowed: Boolean,
+    onNotificationSettingChange: (Boolean) -> Unit,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Настройки") },
+                title = { Text(stringResource(R.string.settings)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -98,7 +105,7 @@ fun SettingsScreenImpl(
         },
         modifier = modifier.fillMaxSize()
     ) { paddingValues ->
-        when (state) {
+        when (pickedApps) {
             State.Loading -> {
                 Box(
                     modifier = Modifier
@@ -135,7 +142,7 @@ fun SettingsScreenImpl(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = state.message,
+                            text = pickedApps.message,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onErrorContainer,
                             textAlign = TextAlign.Center
@@ -154,7 +161,7 @@ fun SettingsScreenImpl(
                 ) {
                     item {
                         SettingsSection(
-                            title = "Профиль",
+                            title = stringResource(R.string.profile),
                             icon = Icons.Default.Person
                         ) {
                             Row(
@@ -176,12 +183,13 @@ fun SettingsScreenImpl(
 
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = UserModel.name ?: "Unknown Name",
+                                        text = UserModel.name
+                                            ?: stringResource(R.string.unknown_name),
                                         style = MaterialTheme.typography.bodyLarge,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
                                     Text(
-                                        text = "Пользователь",
+                                        text = stringResource(R.string.user),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -192,11 +200,11 @@ fun SettingsScreenImpl(
 
                     item {
                         SettingsSection(
-                            title = "Приложение",
+                            title = stringResource(R.string.app),
                             icon = Icons.Default.Settings
                         ) {
                             SettingsItem(
-                                title = "Сменить тему",
+                                title = stringResource(R.string.change_theme),
                                 subtitle = "Светлая/тёмная",
                                 icon = ImageVector.vectorResource(R.drawable.theme_icon),
                                 onClick = onThemeChange
@@ -209,9 +217,22 @@ fun SettingsScreenImpl(
 
                             SettingsItem(
                                 title = "Выбрать приложения",
-                                subtitle = getAppsSubtitle(state.data),
+                                subtitle = getAppsSubtitle(pickedApps.data),
                                 icon = Icons.AutoMirrored.Filled.List,
                                 onClick = onRouteToPickApps
+                            )
+
+                            HorizontalDivider(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant
+                            )
+
+                            SettingsItemWithSwitch(
+                                title = "Уведомления",
+                                subtitle = "Хотите получать уведомления?",
+                                icon = Icons.Default.Notifications,
+                                onClick = onNotificationSettingChange,
+                                isChecked = isNotificationsAllowed,
                             )
                         }
                     }
@@ -282,7 +303,7 @@ private fun SettingsItem(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = null,
+                contentDescription = "Setting Item Icon",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(16.dp)
             )
@@ -307,10 +328,64 @@ private fun SettingsItem(
     }
 }
 
+@Composable
+private fun SettingsItemWithSwitch(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    onClick: (Boolean) -> Unit,
+    isChecked: Boolean,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = "Setting Item Icon",
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Switch(
+            checked = isChecked,
+            onCheckedChange = onClick,
+        )
+    }
+
+}
+
+@Composable
 private fun getAppsSubtitle(apps: List<AppInfo>): String {
     return if (apps.isEmpty()) {
-        "Приложения не выбраны"
+        stringResource(R.string.apps_not_picked)
     } else {
-        "Сейчас выбраны: ${apps.joinToString(", ") { it.appName }}"
+        stringResource(R.string.now_picked_apps, apps.joinToString(", ") { it.appName })
     }
 }

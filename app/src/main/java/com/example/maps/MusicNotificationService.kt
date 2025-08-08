@@ -16,6 +16,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
 import com.example.maps.data.model.ListenFull
 import com.example.maps.data.repository.ListensRepository
+import com.example.maps.domain.GetNotificationSettingUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -28,6 +29,7 @@ import java.util.Locale
 class MusicNotificationService : NotificationListenerService() {
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
+
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         val extras = sbn.notification.extras
         val sharedPreferences = getSharedPreferences("PREFS", MODE_PRIVATE)
@@ -52,8 +54,12 @@ class MusicNotificationService : NotificationListenerService() {
         val sdf = SimpleDateFormat("dd.M.yy", Locale.getDefault())
         val currentDate = sdf.format(Date())
         val lastListenDate = sharedPreferences.getString("LAST_DATE", null)
-        if (currentDate != lastListenDate) {
-            sendNotification(sharedPreferences, currentDate, trackTitle)
+        val getNotificationSettingUseCase: GetNotificationSettingUseCase = get()
+        scope.launch {
+            val isNotificationsAllowed = getNotificationSettingUseCase()
+            if (currentDate != lastListenDate && isNotificationsAllowed) {
+                sendNotification(sharedPreferences, currentDate, trackTitle)
+            }
         }
     }
 
@@ -76,7 +82,7 @@ class MusicNotificationService : NotificationListenerService() {
             )
         }
         val builder = NotificationCompat.Builder(this, "CHANNEL")
-            .setSmallIcon(R.drawable.note_icon)
+            .setSmallIcon(R.drawable.music_icon)
             .setContentTitle(getString(R.string.notification_title, trackTitle))
             .setContentText(getString(R.string.notification_content))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
