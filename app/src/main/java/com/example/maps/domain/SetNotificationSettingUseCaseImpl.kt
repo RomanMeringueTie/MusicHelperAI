@@ -1,14 +1,10 @@
 package com.example.maps.domain
 
-import android.content.SharedPreferences
-import androidx.core.content.edit
+import com.example.maps.data.datasource.NotificationSettingDataSource
 
-class SetNotificationSettingUseCaseImpl(private val sharedPreferences: SharedPreferences) :
+class SetNotificationSettingUseCaseImpl(private val notificationSettingDataSource: NotificationSettingDataSource) :
     SetNotificationSettingUseCase {
     override suspend fun invoke(isAllowed: Boolean) {
-        sharedPreferences.edit(commit = true) {
-            putBoolean("NOTIFICATIONS", isAllowed)
-            apply()
-        }
+        notificationSettingDataSource.set(isAllowed)
     }
 }

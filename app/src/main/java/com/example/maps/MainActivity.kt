@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.core.app.NotificationManagerCompat
 import com.example.maps.ui.MainScreen
-import org.koin.android.ext.android.get
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MainScreen(
                 modifier = Modifier.fillMaxSize(),
-                viewModel = get(),
+                viewModel = koinViewModel(),
             )
         }
     }

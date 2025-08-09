@@ -2,6 +2,16 @@ package com.example.maps.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.maps.data.datasource.InstalledAppsDataSource
+import com.example.maps.data.datasource.InstalledAppsDataSourceImpl
+import com.example.maps.data.datasource.ListensReviewDataSource
+import com.example.maps.data.datasource.ListensReviewDataSourceImpl
+import com.example.maps.data.datasource.NotificationSettingDataSource
+import com.example.maps.data.datasource.NotificationSettingDataSourceImpl
+import com.example.maps.data.datasource.PermissionDataSource
+import com.example.maps.data.datasource.PermissionDataSourceImpl
+import com.example.maps.data.datasource.PickedAppsDataSource
+import com.example.maps.data.datasource.PickedAppsDataSourceImpl
 import com.example.maps.data.db.AppDatabase
 import com.example.maps.data.repository.ListensRepository
 import com.example.maps.data.repository.ListensRepositoryImpl
@@ -25,10 +35,10 @@ import com.example.maps.domain.GetTopTracksUseCase
 import com.example.maps.domain.GetTopTracksUseCaseImpl
 import com.example.maps.domain.InsertListenUseCase
 import com.example.maps.domain.InsertListenUseCaseImpl
-import com.example.maps.domain.SavePickedAppsUseCase
-import com.example.maps.domain.SavePickedAppsUseCaseImpl
 import com.example.maps.domain.SetNotificationSettingUseCase
 import com.example.maps.domain.SetNotificationSettingUseCaseImpl
+import com.example.maps.domain.SetPickedAppsUseCase
+import com.example.maps.domain.SetPickedAppsUseCaseImpl
 import com.example.maps.presentation.AnalysisViewModel
 import com.example.maps.presentation.ListensListViewModel
 import com.example.maps.presentation.MainViewModel
@@ -69,6 +79,9 @@ val appModule = module {
     singleOf(::InsertListenUseCaseImpl) { bind<InsertListenUseCase>() }
     viewModelOf(::ListensListViewModel)
     single {
+        androidContext()
+    }
+    single {
         androidContext().packageManager
     }
     single {
@@ -77,11 +90,16 @@ val appModule = module {
     single {
         androidContext().contentResolver
     }
+    singleOf(::InstalledAppsDataSourceImpl) { bind<InstalledAppsDataSource>() }
+    singleOf(::ListensReviewDataSourceImpl) { bind<ListensReviewDataSource>() }
+    singleOf(::NotificationSettingDataSourceImpl) { bind<NotificationSettingDataSource>() }
+    singleOf(::PermissionDataSourceImpl) { bind<PermissionDataSource>() }
+    singleOf(::PickedAppsDataSourceImpl) { bind<PickedAppsDataSource>() }
     singleOf(::GetNotificationSettingUseCaseImpl) { bind<GetNotificationSettingUseCase>() }
     singleOf(::SetNotificationSettingUseCaseImpl) { bind<SetNotificationSettingUseCase>() }
     singleOf(::GetListensReviewUseCaseImpl) { bind<GetListensReviewUseCase>() }
     singleOf(::GetInstalledAppsUseCaseImpl) { bind<GetInstalledAppsUseCase>() }
-    singleOf(::SavePickedAppsUseCaseImpl) { bind<SavePickedAppsUseCase>() }
+    singleOf(::SetPickedAppsUseCaseImpl) { bind<SetPickedAppsUseCase>() }
     singleOf(::GetPermissionUseCaseImpl) { bind<GetPermissionUseCase>() }
     singleOf(::GetPickedAppsUseCaseImpl) { bind<GetPickedAppsUseCase>() }
     singleOf(::GetTopArtistsUseCaseImpl) { bind<GetTopArtistsUseCase>() }

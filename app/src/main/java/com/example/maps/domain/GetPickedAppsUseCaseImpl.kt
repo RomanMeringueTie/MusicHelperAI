@@ -1,12 +1,12 @@
 package com.example.maps.domain
 
-import android.content.SharedPreferences
+import com.example.maps.data.datasource.PickedAppsDataSource
 
-class GetPickedAppsUseCaseImpl(private val sharedPreferences: SharedPreferences) :
+class GetPickedAppsUseCaseImpl(private val pickedAppsDataSource: PickedAppsDataSource) :
     GetPickedAppsUseCase {
-    override fun invoke(): Result<Set<String>> {
-        val result = sharedPreferences.getStringSet("PICKED_APPS", emptySet<String>())
-        if (result == null || result.isEmpty()) {
+    override suspend fun invoke(): Result<Set<String>> {
+        val result = pickedAppsDataSource.get()
+        if (result.isEmpty()) {
             return Result.failure(Exception("No picked apps"))
         }
         return Result.success(result)

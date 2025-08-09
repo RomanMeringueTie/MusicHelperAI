@@ -7,6 +7,8 @@ import com.example.maps.data.db.ListenDao
 import com.example.maps.data.db.Track
 import com.example.maps.data.db.TrackDao
 import com.example.maps.data.model.ListenFull
+import com.example.maps.data.model.TopArtist
+import com.example.maps.data.model.TopTrack
 
 class ListensRepositoryImpl(
     private val listenDao: ListenDao,
@@ -53,4 +55,14 @@ class ListensRepositoryImpl(
             listenDao.delete(listen)
         }
     }
+
+    override suspend fun getTopArtists(): List<TopArtist> {
+        return listenDao.getTopArtists()
+    }
+
+    override suspend fun getTopTracks(): List<TopTrack> {
+        return listenDao.getTopTracks()
+    }
+
+
 }

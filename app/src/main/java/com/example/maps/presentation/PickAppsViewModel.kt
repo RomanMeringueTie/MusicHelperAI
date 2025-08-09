@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.maps.data.model.AppInfo
 import com.example.maps.domain.GetInstalledAppsUseCase
-import com.example.maps.domain.SavePickedAppsUseCase
+import com.example.maps.domain.SetPickedAppsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 
 class PickAppsViewModel(
     private val getInstalledAppsUseCase: GetInstalledAppsUseCase,
-    private val savePickedAppsUseCase: SavePickedAppsUseCase,
+    private val setPickedAppsUseCase: SetPickedAppsUseCase,
 ) : ViewModel() {
 
     private val _apps = MutableStateFlow<State<List<AppInfo>>>(State.Loading)
@@ -73,6 +73,10 @@ class PickAppsViewModel(
             ?.filter { it.isPicked }
             ?.map { it.packageName }
             ?.toSet()
-        pickedPackages?.let { savePickedAppsUseCase(it) }
+        pickedPackages?.let {
+            viewModelScope.launch {
+                withContext(Dispatchers.IO) { setPickedAppsUseCase(it) }
+            }
+        }
     }
 }

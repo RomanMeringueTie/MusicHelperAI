@@ -1,14 +1,11 @@
 package com.example.maps.domain
 
-import android.content.ContentResolver
+import com.example.maps.data.datasource.PermissionDataSource
 
-class GetPermissionUseCaseImpl(private val contentResolver: ContentResolver) :
+class GetPermissionUseCaseImpl(private val permissionDataSource: PermissionDataSource) :
     GetPermissionUseCase {
-    override fun invoke(): Boolean {
-        val enabledListeners = android.provider.Settings.Secure.getString(
-            contentResolver,
-            "enabled_notification_listeners"
-        )
-        return enabledListeners?.contains("com.example.maps") == true
+    override suspend fun invoke(): Boolean {
+        val result = permissionDataSource.get()
+        return result
     }
 }

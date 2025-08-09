@@ -1,11 +1,11 @@
 package com.example.maps.domain
 
-import android.content.SharedPreferences
+import com.example.maps.data.datasource.NotificationSettingDataSource
 
-class GetNotificationSettingUseCaseImpl(private val sharedPreferences: SharedPreferences) :
+class GetNotificationSettingUseCaseImpl(private val notificationSettingDataSource: NotificationSettingDataSource) :
     GetNotificationSettingUseCase {
     override suspend operator fun invoke(): Boolean {
-        val result = sharedPreferences.getBoolean("NOTIFICATIONS", false)
+        val result = notificationSettingDataSource.get()
         return result
     }
 }
