@@ -79,9 +79,6 @@ val appModule = module {
     singleOf(::InsertListenUseCaseImpl) { bind<InsertListenUseCase>() }
     viewModelOf(::ListensListViewModel)
     single {
-        androidContext()
-    }
-    single {
         androidContext().packageManager
     }
     single {
