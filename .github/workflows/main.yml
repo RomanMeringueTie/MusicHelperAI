@@ -27,7 +27,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Decode google-services.json from secret
-        run: echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > app/google-services.json
+        run: echo "${{ secrets.FIREBASE_CONFIG }}" | base64 -d > app/google-services.json
 
       - name: Build
         run: ./gradlew build --stacktrace
