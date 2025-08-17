@@ -1,7 +1,13 @@
 package com.example.maps.ui
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +26,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
@@ -45,6 +53,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,14 +61,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.maps.R
+import com.example.maps.data.model.Day
 import com.example.maps.data.model.ListenFull
 import com.example.maps.presentation.ListensListViewModel
 import com.example.maps.presentation.State
 import com.example.maps.ui.utils.EnterAnimation
-import kotlinx.collections.immutable.persistentListOf
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -72,13 +80,13 @@ fun ListensListScreen(
     onStats: () -> Unit,
     onRouteToSettings: () -> Unit,
 ) {
-    val listens = viewModel.listens.collectAsState()
+    val days = viewModel.days.collectAsState() // Changed from listens to days
     val indexToDelete = viewModel.indexToDelete.collectAsState()
     val isInsertDialogVisible = viewModel.isInsertDialogShown.collectAsState()
 
     ListensListScreenImpl(
         modifier = modifier,
-        state = listens.value,
+        state = days.value,
         onAnalyze = onAnalyze,
         onStats = onStats,
         indexToDelete = indexToDelete.value,
@@ -96,13 +104,13 @@ fun ListensListScreen(
 @Composable
 fun ListensListScreenImpl(
     modifier: Modifier = Modifier,
-    state: State<List<ListenFull>>,
+    state: State<List<Day>>, // Changed from List<ListenFull> to List<Day>
     onDismissError: () -> Unit = {},
     onAnalyze: () -> Unit,
     onStats: () -> Unit,
     onRouteToSettings: () -> Unit,
-    indexToDelete: Int?,
-    onIndexChange: (Int?) -> Unit,
+    indexToDelete: Pair<Int, Int>?, // Changed to Pair<dayIndex, listenIndex>
+    onIndexChange: (Int, Int) -> Unit,
     onDelete: () -> Unit,
     onInsert: (String, String) -> Unit,
     onChangeInsertDialogVisibility: () -> Unit,
@@ -134,7 +142,7 @@ fun ListensListScreenImpl(
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (state.data.isNotEmpty()) {
+                        if (state.data.isNotEmpty() && state.data.any { it.listens.isNotEmpty() }) {
                             ElevatedButton(onClick = onAnalyze) {
                                 Text(
                                     text = stringResource(R.string.analysis),
@@ -157,6 +165,7 @@ fun ListensListScreenImpl(
                                 hoveredElevation = 2.dp
                             )
                         ) {
+
                             Icon(Icons.Filled.Add, "Add listen")
                         }
                     }
@@ -184,8 +193,8 @@ fun ListensListScreenImpl(
 
                 is State.Content -> {
                     EnterAnimation {
-                        ListensListContent(
-                            listens = state.data,
+                        DaysListContent(
+                            days = state.data,
                             onDelete = onDelete,
                             indexToDelete = indexToDelete,
                             onIndexChange = onIndexChange,
@@ -199,7 +208,6 @@ fun ListensListScreenImpl(
                 is State.Failure -> {
                     Card(
                         modifier = Modifier
-
                             .fillMaxWidth()
                             .padding(16.dp),
                         colors = CardDefaults.cardColors(
@@ -237,16 +245,18 @@ fun ListensListScreenImpl(
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-private fun ListensListContent(
-    listens: List<ListenFull>,
+private fun DaysListContent(
+    days: List<Day>,
     onDelete: () -> Unit,
     isInsertDialogVisible: Boolean,
     onInsert: (String, String) -> Unit,
     onDismissInsert: () -> Unit,
-    indexToDelete: Int?,
-    onIndexChange: (Int?) -> Unit,
+    indexToDelete: Pair<Int, Int>?,
+    onIndexChange: (Int, Int) -> Unit,
 ) {
-    if (listens.isEmpty()) {
+    val totalListens = days.sumOf { it.listens.size }
+
+    if (totalListens == 0) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -254,6 +264,7 @@ private fun ListensListContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+
             Icon(
                 imageVector = Icons.Default.PlayArrow,
                 contentDescription = null,
@@ -262,34 +273,36 @@ private fun ListensListContent(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Тут будут прослушанные вами треки",
+                text = stringResource(R.string.empty_listens_placeholder_title),
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Послушайте музыку в ваших приложениях или добавьте вручную",
+                text = stringResource(R.string.empty_listens_placeholder_body),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
         }
     } else {
-        Column(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                itemsIndexed(items = listens) { index, listen ->
-                    ListenItem(
-                        listen = listen,
-                        onDelete = { onIndexChange(index) }
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            itemsIndexed(items = days) { dayIndex, day ->
+                if (day.listens.isNotEmpty()) {
+                    DayItem(
+                        day = day,
+                        onDelete = { listenIndex ->
+                            onIndexChange(dayIndex, listenIndex)
+                        }
                     )
                 }
-                item { Spacer(modifier = Modifier.height(16.dp)) }
             }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
         }
     }
 
@@ -298,9 +311,10 @@ private fun ListensListContent(
             onConfirm = {
                 onDelete()
             },
-            onDismiss = { onIndexChange(null) }
+            onDismiss = { onIndexChange(-1, -1) }
         )
     }
+
     if (isInsertDialogVisible) {
         InsertTrackDialog(
             onConfirm = { artist, title ->
@@ -314,24 +328,99 @@ private fun ListensListContent(
 
 @SuppressLint("SimpleDateFormat")
 @Composable
-private fun ListenItem(
-    listen: ListenFull,
-    onDelete: () -> Unit,
+private fun DayItem(
+    day: Day,
+    onDelete: (Int) -> Unit,
 ) {
+    var isExpanded by rememberSaveable { mutableStateOf(true) }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { isExpanded = !isExpanded }
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = day.date,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.listens_count,
+                            day.listens.size
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
-        ) {
+                Icon(
+                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = if (isExpanded) "Collapse" else "Expand",
+
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            AnimatedVisibility(
+                visible = isExpanded,
+                enter = expandVertically() + fadeIn(),
+                exit = shrinkVertically() + fadeOut()
+            ) {
+                Column {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
+
+                    day.listens.forEachIndexed { listenIndex, listen ->
+                        ListenItem(
+                            listen = listen,
+                            onDelete = { onDelete(listenIndex) },
+                            isInDayView = true
+                        )
+
+                        if (listenIndex < day.listens.size - 1) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@SuppressLint("SimpleDateFormat")
+@Composable
+private fun ListenItem(
+    listen: ListenFull,
+    onDelete: () -> Unit,
+    isInDayView: Boolean = false,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = if (isInDayView) 16.dp else 16.dp,
+                vertical = if (isInDayView) 8.dp else 16.dp
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (!isInDayView) {
             Box(
                 modifier = Modifier
                     .size(32.dp)
@@ -348,41 +437,41 @@ private fun ListenItem(
                     modifier = Modifier.size(16.dp)
                 )
             }
-
             Spacer(modifier = Modifier.width(12.dp))
+        }
 
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = listen.artist,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = listen.title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                val date = Date(listen.playedAt)
-                val format = SimpleDateFormat("HH:mm", Locale.getDefault())
-                val time = format.format(date)
-                Text(
-                    text = time,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline
-                )
-            }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = listen.artist,
+                style = if (isInDayView) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = listen.title,
+                style = if (isInDayView) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            val date = Date(listen.playedAt)
+            val format = SimpleDateFormat("HH:mm", Locale.getDefault())
+            val time = format.format(date)
+            Text(
+                text = time,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.outline
+            )
+        }
 
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.outline
-                )
-            }
+        IconButton(onClick = onDelete) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Delete",
+                tint = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.size(if (isInDayView) 18.dp else 24.dp)
+            )
         }
     }
 }
@@ -391,16 +480,16 @@ private fun ListenItem(
 private fun DeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Подтвердите удаление") },
-        text = { Text("Вы уверены, что хотите удалить этот элемент?") },
+        title = { Text(stringResource(R.string.delete_listen_confirm_title)) },
+        text = { Text(stringResource(R.string.delete_listen_confirm_body)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("Удалить")
+                Text(stringResource(R.string.delete))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Отмена")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -416,20 +505,20 @@ private fun InsertTrackDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Добавить трек") },
+        title = { Text(stringResource(R.string.add_listen)) },
         text = {
             Column {
                 OutlinedTextField(
                     value = artist,
                     onValueChange = { artist = it },
-                    label = { Text("Исполнитель") },
+                    label = { Text(stringResource(R.string.artist)) },
                     singleLine = true
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = track,
                     onValueChange = { track = it },
-                    label = { Text("Композиция") },
+                    label = { Text(stringResource(R.string.track)) },
                     singleLine = true
                 )
             }
@@ -441,32 +530,32 @@ private fun InsertTrackDialog(
                 },
                 enabled = artist.isNotBlank() && track.isNotBlank()
             ) {
-                Text("Сохранить")
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Отмена")
+                Text(stringResource(R.string.cancel))
             }
         }
     )
 }
 
-@Composable
-@Preview(showBackground = true)
-fun Preview_HomeScreen() {
-    ListensListScreenImpl(
-        modifier = Modifier.fillMaxSize(),
-        state = State.Content(persistentListOf()),
-        onStats = {},
-        onAnalyze = {},
-        onDismissError = {},
-        onRouteToSettings = {},
-        indexToDelete = null,
-        onIndexChange = {},
-        onDelete = {},
-        onInsert = {} as (String, String) -> Unit,
-        onChangeInsertDialogVisibility = {},
-        isInsertDialogVisible = false
-    )
-}
+//@Composable
+//@Preview(showBackground = true)
+//fun Preview_HomeScreen() {
+//    ListensListScreenImpl(
+//        modifier = Modifier.fillMaxSize(),
+//        state = State.Content(persistentListOf()),
+//        onStats = {},
+//        onAnalyze = {},
+//        onDismissError = {},
+//        onRouteToSettings = {},
+//        indexToDelete = null,
+//        onIndexChange = {},
+//        onDelete = {},
+//        onInsert = { it1, it2 -> },
+//        onChangeInsertDialogVisibility = {},
+//        isInsertDialogVisible = false
+//    )
+//}

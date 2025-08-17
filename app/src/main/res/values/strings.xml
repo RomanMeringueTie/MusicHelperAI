@@ -27,4 +27,13 @@
     <string name="unknown_name">Unknown Name</string>
     <string name="profile">Профиль</string>
     <string name="app">Приложение</string>
+    <string name="empty_listens_placeholder_title">Тут будут прослушанные вами треки</string>
+    <string name="empty_listens_placeholder_body">Послушайте музыку в ваших приложениях или добавьте вручную</string>
+    <string name="delete_listen_confirm_title">Подтвердите удаление</string>
+    <string name="delete_listen_confirm_body">Вы уверены, что хотите удалить этот элемент?</string>
+    <string name="delete">Удалить</string>
+    <string name="cancel">Отмена</string>
+    <string name="add_listen">Добавить трек</string>
+    <string name="artist">Исполнитель</string>
+    <string name="track">Композиция</string>
 </resources>

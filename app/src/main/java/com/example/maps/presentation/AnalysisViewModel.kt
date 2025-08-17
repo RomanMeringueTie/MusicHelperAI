@@ -37,7 +37,9 @@ class AnalysisViewModel(
                         }
                     )
                 },
-                onFailure = {}
+                onFailure = {
+                    _review.value = State.Failure(it.message ?: "Что-то пошло не так...")
+                }
             )
 
         }

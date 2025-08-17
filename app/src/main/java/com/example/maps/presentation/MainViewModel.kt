@@ -6,7 +6,7 @@ import com.example.maps.domain.GetPermissionUseCase
 import com.example.maps.domain.GetPickedAppsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -15,20 +15,22 @@ class MainViewModel(
     getPermissionUseCase: GetPermissionUseCase,
 ) : ViewModel() {
     private val _isDarkTheme = MutableStateFlow(false)
-    val isDarkTheme: StateFlow<Boolean> = _isDarkTheme
-    var isPermission: Boolean = false
-    var isAppsPicked: Boolean = false
+    val isDarkTheme = _isDarkTheme.asStateFlow()
+    private val _isPermission = MutableStateFlow(false)
+    val isPermission = _isPermission.asStateFlow()
+    private val _isAppsPicked = MutableStateFlow(false)
+    val isAppsPicked = _isAppsPicked.asStateFlow()
 
     init {
         viewModelScope.launch {
+            _isPermission.value = withContext(Dispatchers.IO) { getPermissionUseCase() }
             val isAppsPickedResult = withContext(Dispatchers.IO) { getPickedAppsUseCase() }
-            isPermission = withContext(Dispatchers.IO) { getPermissionUseCase() }
             isAppsPickedResult.fold(
                 onSuccess = {
-                    isAppsPicked = true
+                    _isAppsPicked.value = true
                 },
                 onFailure = {
-                    isAppsPicked = false
+                    _isAppsPicked.value = false
                 }
             )
         }

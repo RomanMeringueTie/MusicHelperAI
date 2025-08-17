@@ -18,19 +18,23 @@ import org.koin.androidx.compose.koinViewModel
 fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
 
     val isDarkTheme = viewModel.isDarkTheme.collectAsState()
-    val isAppPicked = viewModel.isAppsPicked
     val navController = rememberNavController()
-    var startDestination = if (isAppPicked) "LISTENS_LIST" else "PICK_APPS"
+    val isAppsPicked = viewModel.isAppsPicked.collectAsState()
 
     MapsTheme(darkTheme = isDarkTheme.value) {
         Scaffold(modifier = modifier) { innerPadding ->
             NavHost(navController = navController, startDestination = "LOG_IN") {
                 composable("LOG_IN") {
+                    val nextRoute = if (isAppsPicked.value) "LISTENS_LIST" else "PICK_APPS"
                     LoginScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding),
-                        onRoute = { navController.navigate(startDestination) }
+                        onRoute = {
+                            navController.navigate(nextRoute) {
+                                popUpTo("LOG_IN") { inclusive = true }
+                            }
+                        }
                     )
                 }
                 composable("PICK_APPS") {

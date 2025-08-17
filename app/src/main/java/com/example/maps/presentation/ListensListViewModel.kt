@@ -2,10 +2,12 @@ package com.example.maps.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.maps.data.model.Day
 import com.example.maps.data.model.ListenFull
 import com.example.maps.domain.DeleteListenUseCase
 import com.example.maps.domain.GetListensUseCase
 import com.example.maps.domain.InsertListenUseCase
+import com.example.maps.ui.utils.groupListensByDay
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,10 +20,10 @@ class ListensListViewModel(
     private val insertListenUseCase: InsertListenUseCase,
 ) : ViewModel() {
 
-    private val _listens = MutableStateFlow<State<List<ListenFull>>>(State.Loading)
-    val listens = _listens.asStateFlow()
+    private val _days = MutableStateFlow<State<List<Day>>>(State.Loading)
+    val days = _days.asStateFlow()
 
-    private val _indexToDelete = MutableStateFlow<Int?>(null)
+    private val _indexToDelete = MutableStateFlow<Pair<Int, Int>?>(null)
     val indexToDelete = _indexToDelete.asStateFlow()
 
     private val _isInsertDialogShown = MutableStateFlow(false)
@@ -33,28 +35,33 @@ class ListensListViewModel(
 
     private fun loadListens() {
         viewModelScope.launch {
-            _listens.value = State.Loading
+            _days.value = State.Loading
             val result = withContext(Dispatchers.IO) {
                 getListensUseCase()
             }
             result.fold(
                 onSuccess = {
-                    _listens.value = State.Content(it)
+                    val days = groupListensByDay(it)
+                    _days.value = State.Content(days)
                 },
                 onFailure = {
-                    _listens.value = State.Failure(it.message ?: "Unknown Error")
+                    _days.value = State.Failure(it.message ?: "Unknown Error")
                 }
             )
         }
     }
 
-    fun setIndexToDelete(index: Int?) {
-        _indexToDelete.value = index
+    fun setIndexToDelete(dayIndex: Int, listenIndex: Int) {
+        if (dayIndex < 0 && listenIndex < 0)
+            _indexToDelete.value = null
+        else
+            _indexToDelete.value = dayIndex to listenIndex
     }
 
     fun deleteListen() {
         viewModelScope.launch {
-            val listen = (_listens.value as State.Content).data[_indexToDelete.value!!]
+            val listen =
+                (_days.value as State.Content).data[_indexToDelete.value!!.first].listens[indexToDelete.value!!.second]
             _indexToDelete.value = null
             withContext(Dispatchers.IO) { deleteListenUseCase(listen) }
             loadListens()
