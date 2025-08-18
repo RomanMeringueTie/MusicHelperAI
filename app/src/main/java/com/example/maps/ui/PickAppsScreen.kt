@@ -32,6 +32,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,28 +77,30 @@ fun PickAppsScreenImpl(
     Scaffold(
         modifier = modifier,
         topBar = {
-            Column {
-                TopAppBar(
-                    title = { Text(stringResource(R.string.pick_apps)) }
-                )
-                OutlinedTextField(
-                    colors = TextFieldDefaults.colors()
-                        .copy(unfocusedContainerColor = Color.Transparent),
-                    value = searchQuery,
-                    onValueChange = onSearchChange,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    placeholder = { Text(stringResource(R.string.app_search)) },
-                    singleLine = true,
-                    leadingIcon = {
-                        Icon(
-                            Icons.Default.Search,
-                            contentDescription = "Search Icon"
-                        )
-                    },
-                    shape = RoundedCornerShape(20.dp)
-                )
+            key(MaterialTheme.colorScheme.background) {
+                Column {
+                    TopAppBar(
+                        title = { Text(stringResource(R.string.pick_apps)) }
+                    )
+                    OutlinedTextField(
+                        colors = TextFieldDefaults.colors()
+                            .copy(unfocusedContainerColor = Color.Transparent),
+                        value = searchQuery,
+                        onValueChange = onSearchChange,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        placeholder = { Text(stringResource(R.string.app_search)) },
+                        singleLine = true,
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = "Search Icon"
+                            )
+                        },
+                        shape = RoundedCornerShape(20.dp)
+                    )
+                }
             }
         },
         bottomBar = {

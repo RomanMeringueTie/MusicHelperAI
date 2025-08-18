@@ -51,6 +51,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -117,17 +118,19 @@ fun ListensListScreenImpl(
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.you_have_listened)) },
-                actions = {
-                    IconButton(onClick = onRouteToSettings) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = "Settings"
-                        )
+            key(MaterialTheme.colorScheme.background) {
+                TopAppBar(
+                    title = { Text(stringResource(R.string.you_have_listened)) },
+                    actions = {
+                        IconButton(onClick = onRouteToSettings) {
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings"
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
         },
         bottomBar = {
             if (state is State.Content) {
