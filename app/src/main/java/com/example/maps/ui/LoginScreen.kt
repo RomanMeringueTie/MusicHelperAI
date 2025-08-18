@@ -2,6 +2,12 @@ package com.example.maps.ui
 
 import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.content.Context.VIBRATOR_MANAGER_SERVICE
+import android.content.Context.VIBRATOR_SERVICE
+import android.os.Build
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +32,7 @@ import com.example.maps.R
 import com.example.maps.data.model.UserModel
 import com.example.maps.ui.utils.TypeWritingText
 import com.example.maps.ui.utils.getGreeting
-import com.firebase.ui.auth.AuthUI
+import com.example.maps.ui.utils.signInIntent
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
@@ -67,16 +73,6 @@ fun LoginScreen(modifier: Modifier, onRoute: () -> Unit) {
 
 }
 
-// TODO(To helper class)
-private val providers = arrayListOf(
-    AuthUI.IdpConfig.GoogleBuilder().build(),
-)
-
-private val signInIntent = AuthUI.getInstance()
-    .createSignInIntentBuilder()
-    .setAvailableProviders(providers)
-    .build()
-
 private fun onSignInResult(
     context: Context,
     result: FirebaseAuthUIAuthenticationResult,
@@ -90,6 +86,16 @@ private fun onSignInResult(
         UserModel.name = name
         UserModel.picture = user?.photoUrl.toString()
         UserModel.isAuthorized = true
+        val vibratorManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager =
+                context.getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager
+            vibratorManager.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(VIBRATOR_SERVICE) as Vibrator
+        }
+        val vibrationEffect = VibrationEffect.createOneShot(300, VibrationEffect.DEFAULT_AMPLITUDE)
+        vibratorManager.vibrate(vibrationEffect)
     } else {
         val message = response?.error?.message ?: context.getString(R.string.auth_error)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

@@ -78,7 +78,7 @@ fun ListensListScreen(
     onStats: () -> Unit,
     onRouteToSettings: () -> Unit,
 ) {
-    val days = viewModel.days.collectAsState() // Changed from listens to days
+    val days = viewModel.days.collectAsState()
     val indexToDelete = viewModel.indexToDelete.collectAsState()
     val isInsertDialogVisible = viewModel.isInsertDialogShown.collectAsState()
 
@@ -102,12 +102,12 @@ fun ListensListScreen(
 @Composable
 fun ListensListScreenImpl(
     modifier: Modifier = Modifier,
-    state: State<List<Day>>, // Changed from List<ListenFull> to List<Day>
+    state: State<List<Day>>,
     onDismissError: () -> Unit = {},
     onAnalyze: () -> Unit,
     onStats: () -> Unit,
     onRouteToSettings: () -> Unit,
-    indexToDelete: Pair<Int, Int>?, // Changed to Pair<dayIndex, listenIndex>
+    indexToDelete: Pair<Int, Int>?,
     onIndexChange: (Int, Int) -> Unit,
     onDelete: () -> Unit,
     onInsert: (String, String) -> Unit,
