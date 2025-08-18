@@ -91,7 +91,7 @@ private fun onSignInResult(
         UserModel.picture = user?.photoUrl.toString()
         UserModel.isAuthorized = true
     } else {
-        val message = response?.error?.message ?: "Не удалось авторизоваться"
+        val message = response?.error?.message ?: context.getString(R.string.auth_error)
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }

@@ -36,4 +36,5 @@
     <string name="add_listen">Добавить трек</string>
     <string name="artist">Исполнитель</string>
     <string name="track">Композиция</string>
+    <string name="auth_error">Не удалось авторизоваться</string>
 </resources>
