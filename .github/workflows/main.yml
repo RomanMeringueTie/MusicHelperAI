@@ -29,8 +29,5 @@ jobs:
       - name: Decode google-services.json from secret
         run: echo "${{ secrets.FIREBASE_CONFIG }}" | base64 -d > app/google-services.json
 
-      - name: Build
-        run: ./gradlew build --stacktrace
-
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
