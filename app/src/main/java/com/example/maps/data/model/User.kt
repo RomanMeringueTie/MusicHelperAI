@@ -1,7 +1,11 @@
 package com.example.maps.data.model
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
 object UserModel {
-    var name: String? = null
-    var picture: String? = null
-    var isAuthorized: Boolean = false
+    var name by mutableStateOf<String?>(null)
+    var picture by mutableStateOf<String?>(null)
+    var isAuthorized by mutableStateOf(false)
 }

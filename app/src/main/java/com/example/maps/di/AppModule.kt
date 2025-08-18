@@ -39,6 +39,8 @@ import com.example.maps.domain.SetNotificationSettingUseCase
 import com.example.maps.domain.SetNotificationSettingUseCaseImpl
 import com.example.maps.domain.SetPickedAppsUseCase
 import com.example.maps.domain.SetPickedAppsUseCaseImpl
+import com.example.maps.domain.SignOutUseCase
+import com.example.maps.domain.SignOutUseCaseImpl
 import com.example.maps.presentation.AnalysisViewModel
 import com.example.maps.presentation.ListensListViewModel
 import com.example.maps.presentation.MainViewModel
@@ -92,6 +94,7 @@ val appModule = module {
     singleOf(::NotificationSettingDataSourceImpl) { bind<NotificationSettingDataSource>() }
     singleOf(::PermissionDataSourceImpl) { bind<PermissionDataSource>() }
     singleOf(::PickedAppsDataSourceImpl) { bind<PickedAppsDataSource>() }
+    singleOf(::SignOutUseCaseImpl) { bind<SignOutUseCase>() }
     singleOf(::GetNotificationSettingUseCaseImpl) { bind<GetNotificationSettingUseCase>() }
     singleOf(::SetNotificationSettingUseCaseImpl) { bind<SetNotificationSettingUseCase>() }
     singleOf(::GetListensReviewUseCaseImpl) { bind<GetListensReviewUseCase>() }

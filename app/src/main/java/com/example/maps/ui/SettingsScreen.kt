@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -35,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -55,6 +58,7 @@ import com.example.maps.data.model.AppInfo
 import com.example.maps.data.model.UserModel
 import com.example.maps.presentation.SettingsViewModel
 import com.example.maps.presentation.State
+import com.example.maps.ui.utils.signOut
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,10 +67,12 @@ fun SettingsScreen(
     onThemeChange: () -> Unit,
     onRouteToPickApps: () -> Unit,
     onBack: () -> Unit,
+    onSignIn: () -> Unit,
     viewModel: SettingsViewModel,
 ) {
     val pickedApps = viewModel.pickedApps.collectAsState()
     val isNotificationsAllowed = viewModel.isNotificationsAllowed.collectAsState()
+    val isDialogShown = viewModel.isSignOutDialogShown.collectAsState()
 
     SettingsScreenImpl(
         modifier = modifier,
@@ -76,6 +82,10 @@ fun SettingsScreen(
         pickedApps = pickedApps.value,
         isNotificationsAllowed = isNotificationsAllowed.value,
         onNotificationSettingChange = viewModel::onNotificationSettingChange,
+        onSignIn = onSignIn,
+        onSignOut = viewModel::onSignOut,
+        isDialogShown = isDialogShown.value,
+        onChangeDialogVisibility = viewModel::changeSignOutDialogVisibility
     )
 }
 
@@ -89,7 +99,14 @@ fun SettingsScreenImpl(
     pickedApps: State<List<AppInfo>>,
     isNotificationsAllowed: Boolean,
     onNotificationSettingChange: (Boolean) -> Unit,
+    onSignIn: () -> Unit,
+    onSignOut: () -> Unit,
+    isDialogShown: Boolean,
+    onChangeDialogVisibility: () -> Unit,
 ) {
+
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             key(MaterialTheme.colorScheme.background) {
@@ -169,7 +186,6 @@ fun SettingsScreenImpl(
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-
                                 modifier = Modifier.fillMaxWidth()
                             ) {
                                 AsyncImage(
@@ -197,6 +213,27 @@ fun SettingsScreenImpl(
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
+
+                                if (UserModel.isAuthorized) {
+                                    TextButton(
+                                        onClick = onChangeDialogVisibility,
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.sign_out),
+                                            color = MaterialTheme.colorScheme.error
+                                        )
+                                    }
+                                } else {
+                                    TextButton(
+                                        onClick = onSignIn,
+                                    ) {
+                                        Text(
+                                            stringResource(R.string.sign_in),
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+
                             }
                         }
                     }
@@ -239,6 +276,12 @@ fun SettingsScreenImpl(
                             )
                         }
                     }
+                }
+                if (isDialogShown) {
+                    SignOutDialog(
+                        onConfirm = { signOut(context); onSignOut() },
+                        onDismiss = onChangeDialogVisibility
+                    )
                 }
             }
         }
@@ -391,4 +434,23 @@ private fun getAppsSubtitle(apps: List<AppInfo>): String {
     } else {
         stringResource(R.string.now_picked_apps, apps.joinToString(", ") { it.appName })
     }
+}
+
+@Composable
+private fun SignOutDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Выйти из аккаунта") },
+        text = { Text("Вы уверены?") },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(R.string.sign_out))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
 }

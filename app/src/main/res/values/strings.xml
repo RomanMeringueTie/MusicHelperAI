@@ -24,7 +24,7 @@
     <string name="apps_not_picked">Приложения не выбраны</string>
     <string name="now_picked_apps">Сейчас выбраны: %1$s</string>
     <string name="user">Пользователь</string>
-    <string name="unknown_name">Unknown Name</string>
+    <string name="unknown_name">Гость</string>
     <string name="profile">Профиль</string>
     <string name="app">Приложение</string>
     <string name="empty_listens_placeholder_title">Тут будут прослушанные вами треки</string>
@@ -37,4 +37,6 @@
     <string name="artist">Исполнитель</string>
     <string name="track">Композиция</string>
     <string name="auth_error">Не удалось авторизоваться</string>
+    <string name="sign_out">Выйти</string>
+    <string name="sign_in">Войти</string>
 </resources>

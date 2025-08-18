@@ -6,6 +6,7 @@ import com.example.maps.data.model.AppInfo
 import com.example.maps.domain.GetInstalledAppsUseCase
 import com.example.maps.domain.GetNotificationSettingUseCase
 import com.example.maps.domain.SetNotificationSettingUseCase
+import com.example.maps.domain.SignOutUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,6 +17,7 @@ class SettingsViewModel(
     private val getInstalledAppsUseCase: GetInstalledAppsUseCase,
     private val getNotificationSettingUseCase: GetNotificationSettingUseCase,
     private val setNotificationSettingUseCase: SetNotificationSettingUseCase,
+    private val signOutUseCase: SignOutUseCase,
 ) :
     ViewModel() {
     private val _pickedApps: MutableStateFlow<State<List<AppInfo>>> =
@@ -24,6 +26,9 @@ class SettingsViewModel(
 
     private val _isNotificationsAllowed = MutableStateFlow(false)
     val isNotificationsAllowed = _isNotificationsAllowed.asStateFlow()
+
+    private val _isSignOutDialogShown = MutableStateFlow(false)
+    val isSignOutDialogShown = _isSignOutDialogShown.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -47,5 +52,14 @@ class SettingsViewModel(
             withContext(Dispatchers.IO) { setNotificationSettingUseCase(isAllowed) }
         }
         _isNotificationsAllowed.value = isAllowed
+    }
+
+    fun changeSignOutDialogVisibility() {
+        _isSignOutDialogShown.value = !_isSignOutDialogShown.value
+    }
+
+    fun onSignOut() {
+        signOutUseCase()
+        changeSignOutDialogVisibility()
     }
 }

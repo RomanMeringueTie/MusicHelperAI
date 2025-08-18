@@ -91,6 +91,7 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
                             onRouteToPickApps = { navController.navigate("PICK_APPS") },
                             onBack = navController::navigateUp,
                             viewModel = koinViewModel(),
+                            onSignIn = { navController.navigate("LOG_IN") }
                         )
                     }
                 }
