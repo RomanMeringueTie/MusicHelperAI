@@ -68,9 +68,7 @@ import com.example.maps.data.model.ListenFull
 import com.example.maps.presentation.ListensListViewModel
 import com.example.maps.presentation.State
 import com.example.maps.ui.utils.EnterAnimation
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.example.maps.ui.utils.getDayTimeFromEpochTime
 
 @Composable
 fun ListensListScreen(
@@ -391,7 +389,7 @@ private fun DayItem(
                             isInDayView = true
                         )
 
-                        if (listenIndex < day.listens.size - 1) {
+                        if (listenIndex < day.listens.lastIndex) {
                             HorizontalDivider(
                                 modifier = Modifier.padding(horizontal = 16.dp),
                                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
@@ -455,9 +453,7 @@ private fun ListenItem(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            val date = Date(listen.playedAt)
-            val format = SimpleDateFormat("HH:mm", Locale.getDefault())
-            val time = format.format(date)
+            val time = getDayTimeFromEpochTime(listen.playedAt)
             Text(
                 text = time,
                 style = MaterialTheme.typography.bodySmall,
