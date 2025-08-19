@@ -15,6 +15,8 @@ import com.example.maps.data.datasource.PickedAppsDataSourceImpl
 import com.example.maps.data.db.AppDatabase
 import com.example.maps.data.repository.ListensRepository
 import com.example.maps.data.repository.ListensRepositoryImpl
+import com.example.maps.data.service.AuthService
+import com.example.maps.data.service.AuthServiceImpl
 import com.example.maps.domain.DeleteListenUseCase
 import com.example.maps.domain.DeleteListenUseCaseImpl
 import com.example.maps.domain.GetInstalledAppsUseCase
@@ -39,14 +41,19 @@ import com.example.maps.domain.SetNotificationSettingUseCase
 import com.example.maps.domain.SetNotificationSettingUseCaseImpl
 import com.example.maps.domain.SetPickedAppsUseCase
 import com.example.maps.domain.SetPickedAppsUseCaseImpl
+import com.example.maps.domain.SignInUseCase
+import com.example.maps.domain.SignInUseCaseImpl
 import com.example.maps.domain.SignOutUseCase
 import com.example.maps.domain.SignOutUseCaseImpl
 import com.example.maps.presentation.AnalysisViewModel
 import com.example.maps.presentation.ListensListViewModel
+import com.example.maps.presentation.LoginViewModel
 import com.example.maps.presentation.MainViewModel
 import com.example.maps.presentation.PickAppsViewModel
 import com.example.maps.presentation.SettingsViewModel
 import com.example.maps.presentation.StatsViewModel
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
@@ -76,6 +83,7 @@ val appModule = module {
         db.TrackDao()
     }
     singleOf(::ListensRepositoryImpl) { bind<ListensRepository>() }
+    singleOf(::AuthServiceImpl) { bind<AuthService>() }
     singleOf(::GetListensUseCaseImpl) { bind<GetListensUseCase>() }
     singleOf(::DeleteListenUseCaseImpl) { bind<DeleteListenUseCase>() }
     singleOf(::InsertListenUseCaseImpl) { bind<InsertListenUseCase>() }
@@ -89,11 +97,15 @@ val appModule = module {
     single {
         androidContext().contentResolver
     }
+    single {
+        Firebase.firestore
+    }
     singleOf(::InstalledAppsDataSourceImpl) { bind<InstalledAppsDataSource>() }
     singleOf(::ListensReviewDataSourceImpl) { bind<ListensReviewDataSource>() }
     singleOf(::NotificationSettingDataSourceImpl) { bind<NotificationSettingDataSource>() }
     singleOf(::PermissionDataSourceImpl) { bind<PermissionDataSource>() }
     singleOf(::PickedAppsDataSourceImpl) { bind<PickedAppsDataSource>() }
+    singleOf(::SignInUseCaseImpl) { bind<SignInUseCase>() }
     singleOf(::SignOutUseCaseImpl) { bind<SignOutUseCase>() }
     singleOf(::GetNotificationSettingUseCaseImpl) { bind<GetNotificationSettingUseCase>() }
     singleOf(::SetNotificationSettingUseCaseImpl) { bind<SetNotificationSettingUseCase>() }
@@ -109,4 +121,5 @@ val appModule = module {
     viewModelOf(::PickAppsViewModel)
     viewModelOf(::AnalysisViewModel)
     viewModelOf(::StatsViewModel)
+    viewModelOf(::LoginViewModel)
 }

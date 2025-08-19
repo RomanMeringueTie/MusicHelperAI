@@ -9,11 +9,14 @@ import com.example.maps.data.db.TrackDao
 import com.example.maps.data.model.ListenFull
 import com.example.maps.data.model.TopArtist
 import com.example.maps.data.model.TopTrack
+import com.example.maps.data.model.UserModel
+import com.google.firebase.firestore.FirebaseFirestore
 
 class ListensRepositoryImpl(
     private val listenDao: ListenDao,
     private val artistDao: ArtistDao,
     private val trackDao: TrackDao,
+    private val firestore: FirebaseFirestore,
 ) : ListensRepository {
     override suspend fun getAll(): List<ListenFull> {
         return listenDao.getAll()
@@ -36,7 +39,38 @@ class ListensRepositoryImpl(
         if (recentCount == 0) {
             val listenEntity = Listen(trackId = trackId, playedAt = listenFull.playedAt)
             listenDao.insert(listenEntity)
+            val listenId =
+                trackId.let { listenDao.getIdByTrackAndPlayedAt(it, listenFull.playedAt) }
+
+            if (UserModel.isAuthorized) {
+                val artists = firestore.collection("artists")
+                val tracks = firestore.collection("tracks")
+                val listens = firestore.collection("listens")
+                val userId = UserModel.userId
+
+                val artist =
+                    hashMapOf("userId" to userId, "artistId" to artistId, "name" to artistName)
+                val track =
+                    hashMapOf(
+                        "userId" to userId,
+                        "artistId" to artistId,
+                        "title" to title,
+                        "trackId" to trackId
+                    )
+                val listen =
+                    hashMapOf(
+                        "userId" to userId,
+                        "id" to listenId,
+                        "playedAt" to listenFull.playedAt,
+                        "trackId" to trackId
+                    )
+
+                artists.document(userId + artistId).set(artist)
+                tracks.document(userId + trackId).set(track)
+                listens.document(userId + listenId).set(listen)
+            }
         }
+
     }
 
     override suspend fun delete(listenFull: ListenFull) {
@@ -53,6 +87,11 @@ class ListensRepositoryImpl(
                 playedAt = listenFull.playedAt
             )
             listenDao.delete(listen)
+
+            if (UserModel.isAuthorized) {
+                val listens = firestore.collection("listens")
+                listens.document(UserModel.userId + listenId).delete()
+            }
         }
     }
 
@@ -63,6 +102,5 @@ class ListensRepositoryImpl(
     override suspend fun getTopTracks(): List<TopTrack> {
         return listenDao.getTopTracks()
     }
-
 
 }

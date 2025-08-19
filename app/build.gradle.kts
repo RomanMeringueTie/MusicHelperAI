@@ -44,12 +44,17 @@ android {
 
 dependencies {
 
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+
     // Firebase Auth
     implementation(libs.firebase.ui.auth)
 
     // Firebase AI
-    implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.ai)
+
+    // FireStore
+    implementation(libs.firebase.firestore)
 
     // Koin
     implementation(libs.koin.android)

@@ -30,6 +30,7 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding),
+                        viewModel = koinViewModel(),
                         onRoute = {
                             navController.navigate(nextRoute) {
                                 popUpTo("LOG_IN") { inclusive = true }

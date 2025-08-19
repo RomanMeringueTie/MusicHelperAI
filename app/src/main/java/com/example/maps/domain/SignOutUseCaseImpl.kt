@@ -1,13 +1,9 @@
 package com.example.maps.domain
 
-import com.example.maps.data.model.UserModel
+import com.example.maps.data.service.AuthService
 
-class SignOutUseCaseImpl: SignOutUseCase {
+class SignOutUseCaseImpl(private val authService: AuthService): SignOutUseCase {
     override fun invoke() {
-        UserModel.apply {
-            isAuthorized = false
-            name = null
-            picture = null
-        }
+        authService.signOut()
     }
 }

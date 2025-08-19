@@ -8,4 +8,5 @@ object UserModel {
     var name by mutableStateOf<String?>(null)
     var picture by mutableStateOf<String?>(null)
     var isAuthorized by mutableStateOf(false)
+    var userId by mutableStateOf<String?>(null)
 }
