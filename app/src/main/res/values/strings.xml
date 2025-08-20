@@ -39,4 +39,9 @@
     <string name="auth_error">Не удалось авторизоваться</string>
     <string name="sign_out">Выйти</string>
     <string name="sign_in">Войти</string>
+    <string name="unknown">Неизвестный</string>
+    <string name="night_greeting">Доброй ночи</string>
+    <string name="morning_greeting">Доброе утро</string>
+    <string name="day_greeting">Добрый день</string>
+    <string name="afternoon_greeting">Добрый вечер</string>
 </resources>

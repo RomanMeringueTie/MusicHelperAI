@@ -18,8 +18,6 @@ class AppModuleTest {
         appModule.verify(
             injections = injectedParameters(
                 definition<ContentResolver>(Context::class),
-                definition<AuthServiceImpl>(Context::class),
-                definition<AuthServiceImpl>(FirebaseAuthUIAuthenticationResult::class)
             )
         )
     }
