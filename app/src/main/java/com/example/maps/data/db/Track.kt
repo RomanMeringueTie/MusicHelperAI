@@ -16,7 +16,7 @@ import androidx.room.PrimaryKey
     indices = [Index("artistId")]
 )
 data class Track(
-    @PrimaryKey(autoGenerate = true) val trackId: Long = 0,
+    @PrimaryKey val trackId: String,
     val title: String,
-    val artistId: Long
+    val artistId: String
 )

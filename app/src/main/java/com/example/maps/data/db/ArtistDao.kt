@@ -8,8 +8,8 @@ import androidx.room.Query
 @Dao
 interface ArtistDao {
     @Query("SELECT artistId FROM artists WHERE name = :name LIMIT 1")
-    suspend fun getIdByName(name: String): Long?
+    suspend fun getIdByName(name: String): String?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(artist: Artist): Long
+    suspend fun insert(artist: Artist)
 }

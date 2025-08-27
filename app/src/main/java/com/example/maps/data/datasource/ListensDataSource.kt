@@ -1,0 +1,13 @@
+package com.example.maps.data.datasource
+
+import com.example.maps.data.model.ListenFull
+import com.example.maps.data.model.TopArtist
+import com.example.maps.data.model.TopTrack
+
+interface ListensDataSource {
+    suspend fun getAll(): List<ListenFull>
+    suspend fun insert(listen: ListenFull)
+    suspend fun delete(listen: ListenFull)
+    suspend fun getTopArtists(): List<TopArtist>
+    suspend fun getTopTracks(): List<TopTrack>
+}

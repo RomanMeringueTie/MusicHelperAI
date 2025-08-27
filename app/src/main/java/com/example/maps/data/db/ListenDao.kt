@@ -22,13 +22,13 @@ interface ListenDao {
     SELECT id FROM listens 
     WHERE trackId = :trackId AND playedAt = :playedAt
 """)
-    suspend fun getIdByTrackAndPlayedAt(trackId: Long, playedAt: Long): Long
+    suspend fun getIdByTrackAndPlayedAt(trackId: String, playedAt: Long): String
 
     @Query("""
     SELECT COUNT(*) FROM listens 
     WHERE trackId = :trackId AND playedAt >= :minTime
 """)
-    suspend fun countRecentListens(trackId: Long, minTime: Long): Int
+    suspend fun countRecentListens(trackId: String, minTime: Long): Int
 
     @Query("""
     SELECT tracks.title AS title, artists.name AS artist, listens.playedAt AS playedAt

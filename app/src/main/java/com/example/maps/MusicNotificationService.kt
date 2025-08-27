@@ -10,13 +10,16 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
 import com.example.maps.data.model.ListenFull
+import com.example.maps.data.model.UserModel
 import com.example.maps.data.repository.ListensRepository
 import com.example.maps.domain.GetNotificationSettingUseCase
+import com.example.maps.domain.GetUserUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -44,8 +47,23 @@ class MusicNotificationService : NotificationListenerService() {
                     title = track,
                     playedAt = System.currentTimeMillis()
                 )
+                setUserId()
                 scope.launch { repository.insert(listen) }
                 getLastListenDate(sharedPreferences, track)
+            }
+        }
+    }
+
+    private fun setUserId() {
+        val getUserUseCase: GetUserUseCase = get()
+        var userId = ""
+        scope.launch {
+            userId = getUserUseCase()
+        }
+        if (userId.isNotBlank()) {
+            UserModel.apply {
+                isAuthorized = true
+                this.userId = userId
             }
         }
     }

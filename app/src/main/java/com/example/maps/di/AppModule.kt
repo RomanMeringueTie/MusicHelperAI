@@ -4,6 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import com.example.maps.data.datasource.InstalledAppsDataSource
 import com.example.maps.data.datasource.InstalledAppsDataSourceImpl
+import com.example.maps.data.datasource.ListensLocalDataSource
+import com.example.maps.data.datasource.ListensLocalDataSourceImpl
+import com.example.maps.data.datasource.ListensRemoteDataSource
+import com.example.maps.data.datasource.ListensRemoteDataSourceImpl
 import com.example.maps.data.datasource.ListensReviewDataSource
 import com.example.maps.data.datasource.ListensReviewDataSourceImpl
 import com.example.maps.data.datasource.NotificationSettingDataSource
@@ -12,6 +16,8 @@ import com.example.maps.data.datasource.PermissionDataSource
 import com.example.maps.data.datasource.PermissionDataSourceImpl
 import com.example.maps.data.datasource.PickedAppsDataSource
 import com.example.maps.data.datasource.PickedAppsDataSourceImpl
+import com.example.maps.data.datasource.UserDataSource
+import com.example.maps.data.datasource.UserDataSourceImpl
 import com.example.maps.data.db.AppDatabase
 import com.example.maps.data.repository.ListensRepository
 import com.example.maps.data.repository.ListensRepositoryImpl
@@ -35,8 +41,12 @@ import com.example.maps.domain.GetTopArtistsUseCase
 import com.example.maps.domain.GetTopArtistsUseCaseImpl
 import com.example.maps.domain.GetTopTracksUseCase
 import com.example.maps.domain.GetTopTracksUseCaseImpl
+import com.example.maps.domain.GetUserUseCase
+import com.example.maps.domain.GetUserUseCaseImpl
 import com.example.maps.domain.InsertListenUseCase
 import com.example.maps.domain.InsertListenUseCaseImpl
+import com.example.maps.domain.SaveUserUseCase
+import com.example.maps.domain.SaveUserUseCaseImpl
 import com.example.maps.domain.SetNotificationSettingUseCase
 import com.example.maps.domain.SetNotificationSettingUseCaseImpl
 import com.example.maps.domain.SetPickedAppsUseCase
@@ -100,11 +110,16 @@ val appModule = module {
     single {
         Firebase.firestore
     }
+    singleOf(::ListensLocalDataSourceImpl) { bind<ListensLocalDataSource>() }
+    singleOf(::ListensRemoteDataSourceImpl) { bind<ListensRemoteDataSource>() }
+    singleOf(::UserDataSourceImpl) { bind<UserDataSource>() }
     singleOf(::InstalledAppsDataSourceImpl) { bind<InstalledAppsDataSource>() }
     singleOf(::ListensReviewDataSourceImpl) { bind<ListensReviewDataSource>() }
     singleOf(::NotificationSettingDataSourceImpl) { bind<NotificationSettingDataSource>() }
     singleOf(::PermissionDataSourceImpl) { bind<PermissionDataSource>() }
     singleOf(::PickedAppsDataSourceImpl) { bind<PickedAppsDataSource>() }
+    singleOf(::SaveUserUseCaseImpl) { bind<SaveUserUseCase>() }
+    singleOf(::GetUserUseCaseImpl) { bind<GetUserUseCase>() }
     singleOf(::SignInUseCaseImpl) { bind<SignInUseCase>() }
     singleOf(::SignOutUseCaseImpl) { bind<SignOutUseCase>() }
     singleOf(::GetNotificationSettingUseCaseImpl) { bind<GetNotificationSettingUseCase>() }
