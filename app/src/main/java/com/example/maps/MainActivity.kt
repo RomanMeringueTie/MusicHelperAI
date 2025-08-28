@@ -2,7 +2,6 @@ package com.example.maps
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -42,11 +41,9 @@ class MainActivity : ComponentActivity() {
     override fun onPause() {
         super.onPause()
         val userId = UserModel.userId
-        if (userId != null && UserModel.isAuthorized) {
-            val saveUserUseCase: SaveUserUseCase = get()
-            CoroutineScope(Dispatchers.IO).launch {
-                saveUserUseCase(userId)
-            }
+        val saveUserUseCase: SaveUserUseCase = get()
+        CoroutineScope(Dispatchers.IO).launch {
+            saveUserUseCase(userId ?: "")
         }
     }
 }

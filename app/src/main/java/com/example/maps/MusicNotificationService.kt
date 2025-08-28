@@ -64,7 +64,9 @@ class MusicNotificationService : NotificationListenerService() {
         val getUserUseCase: GetUserUseCase = get()
         var userId = ""
         scope.launch {
-            userId = getUserUseCase()
+            mutex.withLock {
+                userId = getUserUseCase()
+            }
         }
         if (userId.isNotBlank()) {
             UserModel.apply {
@@ -80,9 +82,11 @@ class MusicNotificationService : NotificationListenerService() {
         val lastListenDate = sharedPreferences.getString("LAST_DATE", null)
         val getNotificationSettingUseCase: GetNotificationSettingUseCase = get()
         scope.launch {
-            val isNotificationsAllowed = getNotificationSettingUseCase()
-            if (currentDate != lastListenDate && isNotificationsAllowed) {
-                sendNotification(sharedPreferences, currentDate, trackTitle)
+            mutex.withLock {
+                val isNotificationsAllowed = getNotificationSettingUseCase()
+                if (currentDate != lastListenDate && isNotificationsAllowed) {
+                    sendNotification(sharedPreferences, currentDate, trackTitle)
+                }
             }
         }
     }

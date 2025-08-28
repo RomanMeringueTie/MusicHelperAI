@@ -48,6 +48,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.pullToRefresh
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -82,10 +85,13 @@ fun ListensListScreen(
     val days = viewModel.days.collectAsState()
     val indexToDelete = viewModel.indexToDelete.collectAsState()
     val isInsertDialogVisible = viewModel.isInsertDialogShown.collectAsState()
+    val isRefreshing = viewModel.isRefreshing.collectAsState()
 
     ListensListScreenImpl(
         modifier = modifier,
         state = days.value,
+        isRefreshing = isRefreshing.value,
+        onRefresh = viewModel::loadListens,
         onAnalyze = onAnalyze,
         onStats = onStats,
         indexToDelete = indexToDelete.value,
@@ -104,7 +110,9 @@ fun ListensListScreen(
 fun ListensListScreenImpl(
     modifier: Modifier = Modifier,
     state: State<List<Day>>,
+    isRefreshing: Boolean,
     onDismissError: () -> Unit = {},
+    onRefresh: () -> Unit,
     onAnalyze: () -> Unit,
     onStats: () -> Unit,
     onRouteToSettings: () -> Unit,
@@ -115,8 +123,16 @@ fun ListensListScreenImpl(
     onChangeInsertDialogVisibility: () -> Unit,
     isInsertDialogVisible: Boolean,
 ) {
+    val pullRefreshState = rememberPullToRefreshState()
+
     Scaffold(
-        modifier = modifier,
+        modifier = Modifier
+            .pullToRefresh(
+                isRefreshing = isRefreshing,
+                state = pullRefreshState,
+                onRefresh = onRefresh
+            )
+            .then(modifier),
         topBar = {
             key(MaterialTheme.colorScheme.background) {
                 TopAppBar(
@@ -160,13 +176,13 @@ fun ListensListScreenImpl(
                         FloatingActionButton(
                             onClick = onChangeInsertDialogVisibility,
                             elevation = FloatingActionButtonDefaults.elevation(
+
                                 defaultElevation = 2.dp,
                                 pressedElevation = 2.dp,
                                 focusedElevation = 2.dp,
                                 hoveredElevation = 2.dp
                             )
                         ) {
-
                             Icon(Icons.Filled.Add, "Add listen")
                         }
                     }
@@ -175,71 +191,82 @@ fun ListensListScreenImpl(
             }
         }
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            when (state) {
-                State.Loading -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(48.dp),
-                            color = MaterialTheme.colorScheme.primary,
-                            strokeWidth = 4.dp
-                        )
-                    }
-                }
-
-                is State.Content -> {
-                    EnterAnimation {
-                        DaysListContent(
-                            days = state.data,
-                            onDelete = onDelete,
-                            indexToDelete = indexToDelete,
-                            onIndexChange = onIndexChange,
-                            onInsert = onInsert,
-                            onDismissInsert = onChangeInsertDialogVisibility,
-                            isInsertDialogVisible = isInsertDialogVisible,
-                        )
-                    }
-                }
-
-                is State.Failure -> {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.errorContainer
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Column(modifier = Modifier.padding(innerPadding)) {
+                when (state) {
+                    State.Loading -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Warning,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onErrorContainer,
-                                modifier = Modifier.size(32.dp)
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(48.dp),
+                                color = MaterialTheme.colorScheme.primary,
+                                strokeWidth = 4.dp
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = state.message,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onErrorContainer,
-                                textAlign = TextAlign.Center
+                        }
+                    }
+
+                    is State.Content -> {
+                        EnterAnimation {
+                            DaysListContent(
+                                days = state.data,
+                                onDelete = onDelete,
+                                indexToDelete = indexToDelete,
+                                onIndexChange = onIndexChange,
+                                onInsert = onInsert,
+                                onDismissInsert = onChangeInsertDialogVisibility,
+                                isInsertDialogVisible = isInsertDialogVisible,
                             )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            TextButton(onClick = { onDismissError() }) {
-                                Text("OK")
+                        }
+                    }
+
+                    is State.Failure -> {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Warning,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onErrorContainer,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = state.message,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onErrorContainer,
+                                    textAlign = TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                TextButton(onClick = { onDismissError() }) {
+                                    Text("OK")
+                                }
                             }
                         }
                     }
                 }
             }
+
+            Indicator(
+                isRefreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
         }
     }
 }
