@@ -1,5 +1,6 @@
 package com.example.maps.data.datasource
 
+import android.util.Log
 import com.example.maps.data.model.ListenFull
 import com.example.maps.data.model.TopArtist
 import com.example.maps.data.model.TopTrack
@@ -207,45 +208,59 @@ class ListensRemoteDataSourceImpl(private val firestore: FirebaseFirestore) :
 
     override suspend fun getTopTracks(): List<TopTrack> {
         val userId = UserModel.userId!!
-        var count = AggregateSource.SERVER
         val result = mutableListOf<TopTrack>()
-        val tracks = firestore.collection("tracks")
+        val trackIds = mutableListOf<String>()
+        val listens = firestore.collection("listens")
             .whereEqualTo("userId", userId)
             .get()
             .await()
-        for (track in tracks) {
-            val trackId = track["trackId"] as String
-            val listensCount = firestore.collection("listens")
-                .whereEqualTo("userId", userId)
-                .whereEqualTo("trackId", trackId)
-                .count()
-                .get(count)
-                .await()
-            if (listensCount.count != 0L) {
-                val track = firestore.collection("tracks")
-                    .whereEqualTo("userId", userId)
-                    .whereEqualTo("trackId", trackId)
-                    .limit(1)
-                    .get()
-                    .await()
-                val title = track.documents.first()["title"] as String
-                val artistId = track.documents.first()["artistId"] as String
-                val artist = firestore.collection("artists")
-                    .whereEqualTo("userId", userId)
-                    .whereEqualTo("artistId", artistId)
-                    .limit(1)
-                    .get()
-                    .await()
-                val artistName = artist.documents.first()["name"] as String
-                val topTrack = TopTrack(
-                    trackName = title,
-                    artistName = artistName,
-                    listenCount = listensCount.count.toInt()
-                )
-                result.add(topTrack)
-            }
+        for (listen in listens) {
+            val trackId = listen["trackId"] as String
+            trackIds.add(trackId)
         }
-        return result.sortedByDescending { it.listenCount }.take(5)
+        val topTrackIds = getMostFrequentStrings(trackIds, 5)
+
+        for (topTrackId in topTrackIds) {
+            val track = firestore.collection("tracks")
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("trackId", topTrackId.first)
+                .limit(1)
+                .get()
+                .await()
+                .documents.first()
+            val trackName = track["title"] as String
+
+            val artistId = track["artistId"] as String
+            val artist = firestore.collection("artists")
+                .whereEqualTo("userId", userId)
+                .whereEqualTo("artistId", artistId)
+                .limit(1)
+                .get()
+                .await()
+                .documents
+                .first()
+            val artistName = artist["name"] as String
+
+            val topTrack = TopTrack(
+                trackName = trackName,
+                artistName = artistName,
+                listenCount = topTrackId.second
+            )
+            result.add(topTrack)
+        }
+        return result
     }
 
+    private fun getMostFrequentStrings(strings: List<String>, n: Int): List<Pair<String, Int>> {
+        if (n <= 0 || strings.isEmpty()) {
+            return emptyList()
+        }
+
+        return strings
+            .groupingBy { it }
+            .eachCount()
+            .toList()
+            .sortedByDescending { it.second }
+            .take(n)
+    }
 }

@@ -10,7 +10,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -24,6 +23,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.koin.android.ext.android.get
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -32,6 +33,7 @@ import java.util.Locale
 class MusicNotificationService : NotificationListenerService() {
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
+    private val mutex = Mutex()
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         val extras = sbn.notification.extras
@@ -40,7 +42,7 @@ class MusicNotificationService : NotificationListenerService() {
         if (pickedApps?.contains(sbn.packageName) == true) {
             val artist = extras.getString("android.text")
             val track = extras.getString("android.title")
-            if (artist != null && track != null && artist != "Музыка скоро начнётся") {
+            if (artist != null && track != null && track != "Музыка скоро начнётся") {
                 val repository: ListensRepository = get()
                 val listen = ListenFull(
                     artist = artist,
@@ -48,7 +50,11 @@ class MusicNotificationService : NotificationListenerService() {
                     playedAt = System.currentTimeMillis()
                 )
                 setUserId()
-                scope.launch { repository.insert(listen) }
+                scope.launch {
+                    mutex.withLock {
+                        repository.insert(listen)
+                    }
+                }
                 getLastListenDate(sharedPreferences, track)
             }
         }

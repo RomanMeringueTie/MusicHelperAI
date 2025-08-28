@@ -23,44 +23,41 @@ class StatsViewModel(
     val state = _state.asStateFlow()
 
     init {
-        loadTopArtists()
-        loadTopTracks()
-    }
-
-    private fun loadTopArtists() {
         viewModelScope.launch {
-            val artists = withContext(Dispatchers.IO) {
-                getTopArtistsUseCase()
+            withContext(Dispatchers.IO) {
+                loadTopArtists()
+                loadTopTracks()
             }
-            artists.fold(
-                onSuccess = {
-                    _artists.value = State.Content(it)
-                    updateGlobalState()
-                },
-                onFailure = {
-                    _artists.value = State.Failure(it.message ?: "Что-то пошло не так...")
-                    updateGlobalState()
-                }
-            )
         }
     }
 
-    private fun loadTopTracks() {
-        viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                getTopTracksUseCase()
+    private suspend fun loadTopArtists() {
+        val artists = getTopArtistsUseCase()
+        artists.fold(
+            onSuccess = {
+                _artists.value = State.Content(it)
+                updateGlobalState()
+            },
+            onFailure = {
+                _artists.value = State.Failure(it.message ?: "Что-то пошло не так...")
+                updateGlobalState()
             }
-            result.fold(
-                onSuccess = {
-                    _tracks.value = State.Content(it)
-                    updateGlobalState()
-                },
-                onFailure = {
-                    _tracks.value = State.Failure(it.message ?: "Что-то пошло не так...")
-                    updateGlobalState()
-                }
-            )
-        }
+        )
+    }
+
+    private suspend fun loadTopTracks() {
+        val result =
+            getTopTracksUseCase()
+        result.fold(
+            onSuccess = {
+                _tracks.value = State.Content(it)
+                updateGlobalState()
+            },
+            onFailure = {
+                _tracks.value = State.Failure(it.message ?: "Что-то пошло не так...")
+                updateGlobalState()
+            }
+        )
     }
 
     private fun updateGlobalState() {
