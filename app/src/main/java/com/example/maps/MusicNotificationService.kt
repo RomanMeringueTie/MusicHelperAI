@@ -32,7 +32,7 @@ import java.util.Locale
 
 class MusicNotificationService : NotificationListenerService() {
     private val job = SupervisorJob()
-    private val scope = CoroutineScope(Dispatchers.IO + job)
+    private val scope = CoroutineScope(Dispatchers.Main + job)
     private val mutex = Mutex()
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
@@ -64,9 +64,7 @@ class MusicNotificationService : NotificationListenerService() {
         val getUserUseCase: GetUserUseCase = get()
         var userId = ""
         scope.launch {
-            mutex.withLock {
-                userId = getUserUseCase()
-            }
+            userId = getUserUseCase()
         }
         if (userId.isNotBlank()) {
             UserModel.apply {
@@ -82,11 +80,9 @@ class MusicNotificationService : NotificationListenerService() {
         val lastListenDate = sharedPreferences.getString("LAST_DATE", null)
         val getNotificationSettingUseCase: GetNotificationSettingUseCase = get()
         scope.launch {
-            mutex.withLock {
-                val isNotificationsAllowed = getNotificationSettingUseCase()
-                if (currentDate != lastListenDate && isNotificationsAllowed) {
-                    sendNotification(sharedPreferences, currentDate, trackTitle)
-                }
+            val isNotificationsAllowed = getNotificationSettingUseCase()
+            if (currentDate != lastListenDate && isNotificationsAllowed) {
+                sendNotification(sharedPreferences, currentDate, trackTitle)
             }
         }
     }

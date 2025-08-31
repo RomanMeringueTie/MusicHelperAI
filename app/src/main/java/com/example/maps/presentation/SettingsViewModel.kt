@@ -24,7 +24,7 @@ class SettingsViewModel(
         MutableStateFlow(State.Loading)
     val pickedApps = _pickedApps.asStateFlow()
 
-    private val _isNotificationsAllowed = MutableStateFlow(false)
+    private val _isNotificationsAllowed = MutableStateFlow<Boolean?>(null)
     val isNotificationsAllowed = _isNotificationsAllowed.asStateFlow()
 
     private val _isSignOutDialogShown = MutableStateFlow(false)
@@ -32,9 +32,9 @@ class SettingsViewModel(
 
     init {
         viewModelScope.launch {
-            val pickedAppsResult = withContext(Dispatchers.IO) { getInstalledAppsUseCase() }
             _isNotificationsAllowed.value =
                 withContext(Dispatchers.IO) { getNotificationSettingUseCase() }
+            val pickedAppsResult = withContext(Dispatchers.IO) { getInstalledAppsUseCase() }
 
             pickedAppsResult.fold(
                 onSuccess = {

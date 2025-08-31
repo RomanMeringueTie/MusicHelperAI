@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,15 +22,14 @@ import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -49,7 +47,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -97,7 +94,7 @@ fun SettingsScreenImpl(
     onRouteToPickApps: () -> Unit,
     onBack: () -> Unit,
     pickedApps: State<List<AppInfo>>,
-    isNotificationsAllowed: Boolean,
+    isNotificationsAllowed: Boolean?,
     onNotificationSettingChange: (Boolean) -> Unit,
     onSignIn: () -> Unit,
     onSignOut: () -> Unit,
@@ -125,165 +122,132 @@ fun SettingsScreenImpl(
         },
         modifier = modifier.fillMaxSize()
     ) { paddingValues ->
-        when (pickedApps) {
-            State.Loading -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        strokeWidth = 4.dp
-                    )
-                }
-            }
 
-            is State.Failure -> {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer
-                    )
+        LazyColumn(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                SettingsSection(
+                    title = stringResource(R.string.profile),
+                    icon = Icons.Default.Person
                 ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Warning,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onErrorContainer,
-                            modifier = Modifier.size(32.dp)
+                        AsyncImage(
+                            model = UserModel.picture
+                                ?: "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
+                            contentDescription = "Profile Image",
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = pickedApps.message,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-            }
 
-            is State.Content -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(paddingValues)
-                        .fillMaxSize(),
-                    contentPadding = PaddingValues(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    item {
-                        SettingsSection(
-                            title = stringResource(R.string.profile),
-                            icon = Icons.Default.Person
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = UserModel.name
+                                    ?: stringResource(R.string.unknown_name),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = stringResource(R.string.user),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+
+                        if (UserModel.isAuthorized) {
+                            TextButton(
+                                onClick = onChangeDialogVisibility,
                             ) {
-                                AsyncImage(
-                                    model = UserModel.picture
-                                        ?: "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
-                                    contentDescription = "Profile Image",
-                                    modifier = Modifier
-                                        .size(48.dp)
-                                        .clip(CircleShape),
-                                    contentScale = ContentScale.Crop
+                                Text(
+                                    stringResource(R.string.sign_out),
+                                    color = MaterialTheme.colorScheme.error
                                 )
-
-                                Spacer(modifier = Modifier.width(12.dp))
-
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = UserModel.name
-                                            ?: stringResource(R.string.unknown_name),
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.user),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-
-                                if (UserModel.isAuthorized) {
-                                    TextButton(
-                                        onClick = onChangeDialogVisibility,
-                                    ) {
-                                        Text(
-                                            stringResource(R.string.sign_out),
-                                            color = MaterialTheme.colorScheme.error
-                                        )
-                                    }
-                                } else {
-                                    TextButton(
-                                        onClick = onSignIn,
-                                    ) {
-                                        Text(
-                                            stringResource(R.string.sign_in),
-                                            color = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
-                                }
-
+                            }
+                        } else {
+                            TextButton(
+                                onClick = onSignIn,
+                            ) {
+                                Text(
+                                    stringResource(R.string.sign_in),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                             }
                         }
+
                     }
+                }
+            }
 
-                    item {
-                        SettingsSection(
-                            title = stringResource(R.string.app),
-                            icon = Icons.Default.Settings
-                        ) {
-                            SettingsItem(
-                                title = stringResource(R.string.change_theme),
-                                subtitle = "Светлая/тёмная",
-                                icon = ImageVector.vectorResource(R.drawable.theme_icon),
-                                onClick = onThemeChange
-                            )
+            item {
+                SettingsSection(
+                    title = stringResource(R.string.app),
+                    icon = Icons.Default.Settings
+                ) {
+                    SettingsItem(
+                        title = stringResource(R.string.change_theme),
+                        subtitle = "Светлая/тёмная",
+                        icon = ImageVector.vectorResource(R.drawable.theme_icon),
+                        onClick = onThemeChange
+                    )
 
-                            HorizontalDivider(
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                color = MaterialTheme.colorScheme.outlineVariant
-                            )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
 
+                    when (pickedApps) {
+                        is State.Content -> {
                             SettingsItem(
                                 title = "Выбрать приложения",
                                 subtitle = getAppsSubtitle(pickedApps.data),
                                 icon = Icons.AutoMirrored.Filled.List,
                                 onClick = onRouteToPickApps
                             )
+                        }
 
-                            HorizontalDivider(
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                color = MaterialTheme.colorScheme.outlineVariant
-                            )
-
-                            SettingsItemWithSwitch(
-                                title = "Уведомления",
-                                subtitle = "Хотите получать уведомления?",
-                                icon = Icons.Default.Notifications,
-                                onClick = onNotificationSettingChange,
-                                isChecked = isNotificationsAllowed,
+                        else -> {
+                            SettingsItem(
+                                title = "Выбрать приложения",
+                                subtitle = "",
+                                icon = Icons.AutoMirrored.Filled.List,
+                                onClick = onRouteToPickApps
                             )
                         }
                     }
-                }
-                if (isDialogShown) {
-                    SignOutDialog(
-                        onConfirm = { signOut(context); onSignOut() },
-                        onDismiss = onChangeDialogVisibility
+
+
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
+
+                    SettingsItemWithSwitch(
+                        title = "Уведомления",
+                        subtitle = "Хотите получать уведомления?",
+                        icon = Icons.Default.Notifications,
+                        onClick = onNotificationSettingChange,
+                        isChecked = isNotificationsAllowed
                     )
                 }
             }
+        }
+        if (isDialogShown) {
+            SignOutDialog(
+                onConfirm = { signOut(context); onSignOut() },
+                onDismiss = onChangeDialogVisibility
+            )
         }
     }
 }
@@ -363,13 +327,29 @@ private fun SettingsItem(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+            if (subtitle.isNotBlank()) {
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Сейчас выбраны: ",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    LinearProgressIndicator()
+                }
+            }
         }
     }
 }
@@ -380,7 +360,7 @@ private fun SettingsItemWithSwitch(
     subtitle: String,
     icon: ImageVector,
     onClick: (Boolean) -> Unit,
-    isChecked: Boolean,
+    isChecked: Boolean?,
 ) {
     Row(
         modifier = Modifier
@@ -419,10 +399,12 @@ private fun SettingsItemWithSwitch(
                 overflow = TextOverflow.Ellipsis
             )
         }
-        Switch(
-            checked = isChecked,
-            onCheckedChange = onClick,
-        )
+        isChecked?.let {
+            Switch(
+                checked = it,
+                onCheckedChange = onClick,
+            )
+        }
     }
 
 }

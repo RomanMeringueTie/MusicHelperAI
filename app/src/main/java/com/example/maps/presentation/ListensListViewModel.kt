@@ -9,9 +9,11 @@ import com.example.maps.domain.GetListensUseCase
 import com.example.maps.domain.InsertListenUseCase
 import com.example.maps.ui.utils.groupListensByDay
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -23,11 +25,6 @@ class ListensListViewModel(
 
     private val _days = MutableStateFlow<State<List<Day>>>(State.Loading)
     val days = _days.asStateFlow()
-
-    val isRefreshing: StateFlow<Boolean>
-        get() {
-            return MutableStateFlow(days.value is State.Loading).asStateFlow()
-        }
 
     private val _indexToDelete = MutableStateFlow<Pair<Int, Int>?>(null)
     val indexToDelete = _indexToDelete.asStateFlow()
@@ -46,12 +43,12 @@ class ListensListViewModel(
                 getListensUseCase()
             }
             result.fold(
-                onSuccess = {
-                    val days = groupListensByDay(it)
-                    _days.value = State.Content(days)
+                onSuccess = { result ->
+                    val days = groupListensByDay(result)
+                    _days.update { State.Content(days) }
                 },
-                onFailure = {
-                    _days.value = State.Failure(it.message ?: "Unknown Error")
+                onFailure = { error ->
+                    _days.update { State.Failure(error.message ?: "Unknown Error") }
                 }
             )
         }

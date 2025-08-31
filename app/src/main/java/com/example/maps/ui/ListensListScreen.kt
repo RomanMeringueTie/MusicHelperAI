@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
@@ -48,9 +49,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
-import androidx.compose.material3.pulltorefresh.pullToRefresh
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -85,12 +83,10 @@ fun ListensListScreen(
     val days = viewModel.days.collectAsState()
     val indexToDelete = viewModel.indexToDelete.collectAsState()
     val isInsertDialogVisible = viewModel.isInsertDialogShown.collectAsState()
-    val isRefreshing = viewModel.isRefreshing.collectAsState()
 
     ListensListScreenImpl(
         modifier = modifier,
         state = days.value,
-        isRefreshing = isRefreshing.value,
         onRefresh = viewModel::loadListens,
         onAnalyze = onAnalyze,
         onStats = onStats,
@@ -110,7 +106,6 @@ fun ListensListScreen(
 fun ListensListScreenImpl(
     modifier: Modifier = Modifier,
     state: State<List<Day>>,
-    isRefreshing: Boolean,
     onDismissError: () -> Unit = {},
     onRefresh: () -> Unit,
     onAnalyze: () -> Unit,
@@ -123,21 +118,20 @@ fun ListensListScreenImpl(
     onChangeInsertDialogVisibility: () -> Unit,
     isInsertDialogVisible: Boolean,
 ) {
-    val pullRefreshState = rememberPullToRefreshState()
 
     Scaffold(
-        modifier = Modifier
-            .pullToRefresh(
-                isRefreshing = isRefreshing,
-                state = pullRefreshState,
-                onRefresh = onRefresh
-            )
-            .then(modifier),
+        modifier = modifier,
         topBar = {
             key(MaterialTheme.colorScheme.background) {
                 TopAppBar(
                     title = { Text(stringResource(R.string.you_have_listened)) },
                     actions = {
+                        IconButton(onClick = onRefresh) {
+                            Icon(
+                                imageVector = Icons.Default.Refresh,
+                                contentDescription = "Refresh"
+                            )
+                        }
                         IconButton(onClick = onRouteToSettings) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
@@ -176,7 +170,6 @@ fun ListensListScreenImpl(
                         FloatingActionButton(
                             onClick = onChangeInsertDialogVisibility,
                             elevation = FloatingActionButtonDefaults.elevation(
-
                                 defaultElevation = 2.dp,
                                 pressedElevation = 2.dp,
                                 focusedElevation = 2.dp,
@@ -261,12 +254,6 @@ fun ListensListScreenImpl(
                     }
                 }
             }
-
-            Indicator(
-                isRefreshing = isRefreshing,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
     }
 }
