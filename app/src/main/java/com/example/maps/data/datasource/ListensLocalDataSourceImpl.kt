@@ -57,15 +57,15 @@ class ListensLocalDataSourceImpl(
         }
     }
 
-    override suspend fun delete(listen: ListenFull) {
-        val artistId = artistDao.getIdByName(listen.artist)
+    override suspend fun delete(listenFull: ListenFull) {
+        val artistId = artistDao.getIdByName(listenFull.artist)
         val trackId =
-            artistId?.let { trackDao.getIdByTitleAndArtist(listen.title, it) }
+            artistId?.let { trackDao.getIdByTitleAndArtist(listenFull.title, it) }
         val listenId =
             trackId?.let {
                 listenDao.getIdByTrackAndPlayedAt(
                     it,
-                    listen.playedAt
+                    listenFull.playedAt
                 )
             }
 
@@ -73,7 +73,7 @@ class ListensLocalDataSourceImpl(
             val listen = Listen(
                 id = it,
                 trackId = trackId,
-                playedAt = listen.playedAt
+                playedAt = listenFull.playedAt
             )
             listenDao.delete(listen)
         }
