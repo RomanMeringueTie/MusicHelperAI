@@ -8,8 +8,8 @@ import com.example.maps.data.datasource.ListensLocalDataSource
 import com.example.maps.data.datasource.ListensLocalDataSourceImpl
 import com.example.maps.data.datasource.ListensRemoteDataSource
 import com.example.maps.data.datasource.ListensRemoteDataSourceImpl
-import com.example.maps.data.datasource.ListensReviewDataSource
-import com.example.maps.data.datasource.ListensReviewDataSourceImpl
+import com.example.maps.data.datasource.AIReviewDataSource
+import com.example.maps.data.datasource.AIReviewDataSourceImpl
 import com.example.maps.data.datasource.NotificationSettingDataSource
 import com.example.maps.data.datasource.NotificationSettingDataSourceImpl
 import com.example.maps.data.datasource.PermissionDataSource
@@ -41,6 +41,8 @@ import com.example.maps.domain.GetTopArtistsUseCase
 import com.example.maps.domain.GetTopArtistsUseCaseImpl
 import com.example.maps.domain.GetTopTracksUseCase
 import com.example.maps.domain.GetTopTracksUseCaseImpl
+import com.example.maps.domain.GetTrackReviewUseCase
+import com.example.maps.domain.GetTrackReviewUseCaseImpl
 import com.example.maps.domain.GetUserUseCase
 import com.example.maps.domain.GetUserUseCaseImpl
 import com.example.maps.domain.InsertListenUseCase
@@ -114,11 +116,12 @@ val appModule = module {
     singleOf(::ListensRemoteDataSourceImpl) { bind<ListensRemoteDataSource>() }
     singleOf(::UserDataSourceImpl) { bind<UserDataSource>() }
     singleOf(::InstalledAppsDataSourceImpl) { bind<InstalledAppsDataSource>() }
-    singleOf(::ListensReviewDataSourceImpl) { bind<ListensReviewDataSource>() }
+    singleOf(::AIReviewDataSourceImpl) { bind<AIReviewDataSource>() }
     singleOf(::NotificationSettingDataSourceImpl) { bind<NotificationSettingDataSource>() }
     singleOf(::PermissionDataSourceImpl) { bind<PermissionDataSource>() }
     singleOf(::PickedAppsDataSourceImpl) { bind<PickedAppsDataSource>() }
     singleOf(::SaveUserUseCaseImpl) { bind<SaveUserUseCase>() }
+    singleOf(::GetTrackReviewUseCaseImpl) { bind<GetTrackReviewUseCase>() }
     singleOf(::GetUserUseCaseImpl) { bind<GetUserUseCase>() }
     singleOf(::SignInUseCaseImpl) { bind<SignInUseCase>() }
     singleOf(::SignOutUseCaseImpl) { bind<SignOutUseCase>() }

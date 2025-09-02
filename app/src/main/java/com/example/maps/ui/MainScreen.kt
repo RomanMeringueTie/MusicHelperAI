@@ -56,7 +56,7 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
                             .padding(innerPadding),
                         viewModel = koinViewModel(),
                         onRouteToSettings = { navController.navigate("SETTINGS") },
-                        onAnalyze = {
+                        onListensAnalyze = {
                             navController.navigate("ANALYSIS")
                         },
                         onStats = { navController.navigate("STATS") }

@@ -1,5 +1,5 @@
 package com.example.maps.data.model
 
-data class Review(
+data class ListensReview(
     val recommendations: String,
 )

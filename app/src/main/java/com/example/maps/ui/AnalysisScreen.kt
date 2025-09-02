@@ -42,7 +42,7 @@ import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.maps.R
-import com.example.maps.data.model.Review
+import com.example.maps.data.model.ListensReview
 import com.example.maps.presentation.AnalysisViewModel
 import com.example.maps.presentation.State
 import com.example.maps.ui.utils.EnterAnimation
@@ -65,7 +65,7 @@ fun AnalysisScreen(modifier: Modifier, viewModel: AnalysisViewModel, onBack: () 
 @Composable
 fun AnalysisScreenImpl(
     modifier: Modifier,
-    state: State<Review>,
+    state: State<ListensReview>,
     onDismissError: () -> Unit,
     onBack: () -> Unit,
 ) {

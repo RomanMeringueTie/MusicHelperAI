@@ -6,6 +6,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -14,25 +15,34 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -44,6 +54,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -59,14 +70,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.maps.R
 import com.example.maps.data.model.Day
 import com.example.maps.data.model.ListenFull
+import com.example.maps.data.model.TrackReview
 import com.example.maps.presentation.ListensListViewModel
 import com.example.maps.presentation.State
 import com.example.maps.ui.utils.EnterAnimation
@@ -76,27 +90,33 @@ import com.example.maps.ui.utils.getDayTimeFromEpochTime
 fun ListensListScreen(
     modifier: Modifier,
     viewModel: ListensListViewModel,
-    onAnalyze: () -> Unit,
+    onListensAnalyze: () -> Unit,
     onStats: () -> Unit,
     onRouteToSettings: () -> Unit,
 ) {
     val days = viewModel.days.collectAsState()
     val indexToDelete = viewModel.indexToDelete.collectAsState()
     val isInsertDialogVisible = viewModel.isInsertDialogShown.collectAsState()
+    val indexToAnalyze = viewModel.indexToAnalyze.collectAsState()
+    val trackReview = viewModel.trackReview.collectAsState()
 
     ListensListScreenImpl(
         modifier = modifier,
         state = days.value,
         onRefresh = viewModel::loadListens,
-        onAnalyze = onAnalyze,
+        indexToAnalyze = indexToAnalyze.value,
+        onIndexToAnalyzeChange = viewModel::setIndexToAnalyze,
+        onListensAnalyze = onListensAnalyze,
+        onTrackAnalyze = viewModel::analyzeListen,
         onStats = onStats,
         indexToDelete = indexToDelete.value,
         onRouteToSettings = onRouteToSettings,
-        onIndexChange = viewModel::setIndexToDelete,
+        onIndexToDeleteChange = viewModel::setIndexToDelete,
         onDelete = viewModel::deleteListen,
         onInsert = viewModel::insertListen,
         onChangeInsertDialogVisibility = viewModel::changeInsertDialogVisibility,
-        isInsertDialogVisible = isInsertDialogVisible.value
+        isInsertDialogVisible = isInsertDialogVisible.value,
+        trackReview = trackReview.value
     )
 }
 
@@ -108,15 +128,19 @@ fun ListensListScreenImpl(
     state: State<List<Day>>,
     onDismissError: () -> Unit = {},
     onRefresh: () -> Unit,
-    onAnalyze: () -> Unit,
+    onListensAnalyze: () -> Unit,
+    indexToAnalyze: Pair<Int, Int>?,
+    onIndexToAnalyzeChange: (Int, Int) -> Unit,
+    onTrackAnalyze: () -> Unit,
     onStats: () -> Unit,
     onRouteToSettings: () -> Unit,
     indexToDelete: Pair<Int, Int>?,
-    onIndexChange: (Int, Int) -> Unit,
+    onIndexToDeleteChange: (Int, Int) -> Unit,
     onDelete: () -> Unit,
     onInsert: (String, String) -> Unit,
     onChangeInsertDialogVisibility: () -> Unit,
     isInsertDialogVisible: Boolean,
+    trackReview: State<TrackReview>,
 ) {
 
     Scaffold(
@@ -154,7 +178,7 @@ fun ListensListScreenImpl(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         if (state.data.isNotEmpty() && state.data.any { it.listens.isNotEmpty() }) {
-                            ElevatedButton(onClick = onAnalyze) {
+                            ElevatedButton(onClick = onListensAnalyze) {
                                 Text(
                                     text = stringResource(R.string.analysis),
                                     modifier = Modifier.padding(8.dp)
@@ -209,12 +233,16 @@ fun ListensListScreenImpl(
                         EnterAnimation {
                             DaysListContent(
                                 days = state.data,
-                                onDelete = onDelete,
+                                indexToAnalyze = indexToAnalyze,
+                                onIndexToAnalyzeChange = onIndexToAnalyzeChange,
+                                onTrackAnalyze = onTrackAnalyze,
                                 indexToDelete = indexToDelete,
-                                onIndexChange = onIndexChange,
+                                onIndexToDeleteChange = onIndexToDeleteChange,
+                                onDelete = onDelete,
                                 onInsert = onInsert,
                                 onDismissInsert = onChangeInsertDialogVisibility,
                                 isInsertDialogVisible = isInsertDialogVisible,
+                                trackReview = trackReview
                             )
                         }
                     }
@@ -258,16 +286,21 @@ fun ListensListScreenImpl(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("SimpleDateFormat")
 @Composable
 private fun DaysListContent(
     days: List<Day>,
     onDelete: () -> Unit,
+    onTrackAnalyze: () -> Unit,
     isInsertDialogVisible: Boolean,
     onInsert: (String, String) -> Unit,
     onDismissInsert: () -> Unit,
     indexToDelete: Pair<Int, Int>?,
-    onIndexChange: (Int, Int) -> Unit,
+    onIndexToDeleteChange: (Int, Int) -> Unit,
+    indexToAnalyze: Pair<Int, Int>?,
+    onIndexToAnalyzeChange: (Int, Int) -> Unit,
+    trackReview: State<TrackReview>,
 ) {
     val totalListens = days.sumOf { it.listens.size }
 
@@ -312,7 +345,11 @@ private fun DaysListContent(
                     DayItem(
                         day = day,
                         onDelete = { listenIndex ->
-                            onIndexChange(dayIndex, listenIndex)
+                            onIndexToDeleteChange(dayIndex, listenIndex)
+                        },
+                        onTrackAnalyze = { listenIndex ->
+                            onIndexToAnalyzeChange(dayIndex, listenIndex)
+                            onTrackAnalyze()
                         }
                     )
                 }
@@ -326,7 +363,7 @@ private fun DaysListContent(
             onConfirm = {
                 onDelete()
             },
-            onDismiss = { onIndexChange(-1, -1) }
+            onDismiss = { onIndexToDeleteChange(-1, -1) }
         )
     }
 
@@ -339,6 +376,95 @@ private fun DaysListContent(
             onDismiss = onDismissInsert
         )
     }
+
+    indexToAnalyze?.let {
+
+//        AlertDialog(
+//            onDismissRequest = {
+//                onIndexToAnalyzeChange(
+//                    -1,
+//                    -1
+//                )
+//            },
+//            title = {
+//                when (trackReview) {
+//                    is State.Content -> {
+//                        Text("Анализ трека ${trackReview.data.artist} - ${trackReview.data.title}")
+//                    }
+//
+//                    else -> {
+//                        Text("Анализ трека")
+//                    }
+//                }
+//            },
+//            text = {
+//                when (trackReview) {
+//                    is State.Loading -> {
+//                        Box(
+//                            modifier = Modifier
+//                                .fillMaxSize()
+//                                .padding(16.dp),
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            CircularProgressIndicator(
+//                                modifier = Modifier.size(48.dp),
+//                                color = MaterialTheme.colorScheme.primary,
+//                                strokeWidth = 4.dp
+//                            )
+//                        }
+//                    }
+//
+//                    is State.Failure -> {
+//                        Column(
+//                            modifier = Modifier.padding(16.dp),
+//                            horizontalAlignment = Alignment.CenterHorizontally
+//                        ) {
+//                            Icon(
+//                                imageVector = Icons.Default.Warning,
+//                                contentDescription = null,
+//                                tint = MaterialTheme.colorScheme.onErrorContainer,
+//                                modifier = Modifier.size(32.dp)
+//                            )
+//                            Spacer(modifier = Modifier.height(8.dp))
+//                            Text(
+//                                text = trackReview.message,
+//                                style = MaterialTheme.typography.bodyMedium,
+//                                color = MaterialTheme.colorScheme.onErrorContainer,
+//                                textAlign = TextAlign.Center
+//                            )
+//                            Spacer(modifier = Modifier.height(16.dp))
+//                            TextButton(onClick = {
+//                                onIndexToAnalyzeChange(-1, -1)
+//                            }) {
+//                                Text("OK")
+//                            }
+//                        }
+//                    }
+//
+//                    is State.Content -> {
+//                        val verticalScrollState = rememberScrollState()
+//                        Text(
+//                            modifier = Modifier.verticalScroll(verticalScrollState),
+//                            text = trackReview.data.review
+//                        )
+//                    }
+//                }
+//            },
+//            confirmButton = {
+//                TextButton(onClick = {
+//                    onIndexToAnalyzeChange(-1, -1)
+//                }) {
+//                    Text("OK")
+//                }
+//            },
+//        )
+        TrackAnalysisDialog(
+            trackReview, onDismiss = {
+                onIndexToAnalyzeChange(-1, -1)
+            }
+        )
+    }
+
 }
 
 @SuppressLint("SimpleDateFormat")
@@ -346,6 +472,7 @@ private fun DaysListContent(
 private fun DayItem(
     day: Day,
     onDelete: (Int) -> Unit,
+    onTrackAnalyze: (Int) -> Unit,
 ) {
     var isExpanded by rememberSaveable { mutableStateOf(true) }
 
@@ -403,6 +530,7 @@ private fun DayItem(
                         ListenItem(
                             listen = listen,
                             onDelete = { onDelete(listenIndex) },
+                            onTrackAnalyze = { onTrackAnalyze(listenIndex) },
                             isInDayView = true
                         )
 
@@ -424,6 +552,7 @@ private fun DayItem(
 private fun ListenItem(
     listen: ListenFull,
     onDelete: () -> Unit,
+    onTrackAnalyze: () -> Unit,
     isInDayView: Boolean = false,
 ) {
     Row(
@@ -475,6 +604,15 @@ private fun ListenItem(
                 text = time,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline
+            )
+        }
+
+        IconButton(onClick = onTrackAnalyze) {
+            Icon(
+                imageVector = Icons.Default.Info,
+                contentDescription = "Analyze Track",
+                tint = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.size(if (isInDayView) 18.dp else 24.dp)
             )
         }
 
@@ -554,6 +692,204 @@ private fun InsertTrackDialog(
     )
 }
 
+@Composable
+fun TrackAnalysisDialog(
+    trackReview: State<TrackReview>,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.note_icon),
+                    contentDescription = "Note Icon",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+                Text(
+                    text = when (trackReview) {
+                        is State.Content -> "Анализ: ${trackReview.data.artist} - ${trackReview.data.title}"
+                        else -> "Анализ трека"
+                    },
+                    style = MaterialTheme.typography.headlineSmall,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        },
+        text = {
+            TrackAnalysisContent(
+                trackReview = trackReview,
+                onDismiss = onDismiss
+            )
+        },
+        confirmButton = {
+            if (trackReview is State.Content) {
+                TextButton(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text(
+                        text = "Закрыть",
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 6.dp,
+        modifier = Modifier.widthIn(min = 280.dp, max = 560.dp)
+    )
+}
+
+@Composable
+private fun TrackAnalysisContent(
+    trackReview: State<TrackReview>,
+    onDismiss: () -> Unit,
+) {
+    when (trackReview) {
+        is State.Loading -> {
+            LoadingContent()
+        }
+
+        is State.Failure -> {
+            ErrorContent(
+                message = trackReview.message,
+                onDismiss = onDismiss
+            )
+        }
+
+        is State.Content -> {
+            ReviewContent(review = trackReview.data.review)
+        }
+    }
+}
+
+@Composable
+private fun LoadingContent() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(48.dp),
+            color = MaterialTheme.colorScheme.primary,
+            strokeWidth = 4.dp,
+            strokeCap = StrokeCap.Round
+        )
+        Text(
+            text = "Анализируем трек...",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun ErrorContent(
+    message: String,
+    onDismiss: () -> Unit,
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.errorContainer
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Warning,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onErrorContainer,
+                modifier = Modifier.size(32.dp)
+            )
+            Text(
+                text = "Ошибка анализа",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = message,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.8f),
+                textAlign = TextAlign.Center,
+                lineHeight = 20.sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = onDismiss,
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                ),
+                border = BorderStroke(
+                    1.dp,
+                    MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.5f)
+                )
+            ) {
+                Text(
+                    text = "Понятно",
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReviewContent(review: String) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        val scrollState = rememberScrollState()
+
+        Text(
+            text = review,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                lineHeight = 22.sp
+            ),
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 120.dp, max = 400.dp)
+                .verticalScroll(scrollState)
+                .padding(20.dp),
+            textAlign = TextAlign.Start
+        )
+
+        if (scrollState.maxValue > 0) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(2.dp)
+                    .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.1f))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(scrollState.value.toFloat() / scrollState.maxValue)
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.6f))
+                )
+            }
+        }
+    }
+}
 //@Composable
 //@Preview(showBackground = true)
 //fun Preview_HomeScreen() {

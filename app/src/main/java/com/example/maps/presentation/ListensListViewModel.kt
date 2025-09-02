@@ -4,14 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.maps.data.model.Day
 import com.example.maps.data.model.ListenFull
+import com.example.maps.data.model.TrackReview
 import com.example.maps.domain.DeleteListenUseCase
 import com.example.maps.domain.GetListensUseCase
+import com.example.maps.domain.GetTrackReviewUseCase
 import com.example.maps.domain.InsertListenUseCase
 import com.example.maps.ui.utils.groupListensByDay
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -20,6 +20,7 @@ import kotlinx.coroutines.withContext
 class ListensListViewModel(
     private val getListensUseCase: GetListensUseCase,
     private val deleteListenUseCase: DeleteListenUseCase,
+    private val getTrackReviewUseCase: GetTrackReviewUseCase,
     private val insertListenUseCase: InsertListenUseCase,
 ) : ViewModel() {
 
@@ -32,13 +33,19 @@ class ListensListViewModel(
     private val _isInsertDialogShown = MutableStateFlow(false)
     val isInsertDialogShown = _isInsertDialogShown.asStateFlow()
 
+    private val _indexToAnalyze = MutableStateFlow<Pair<Int, Int>?>(null)
+    val indexToAnalyze = _indexToAnalyze.asStateFlow()
+
+    private val _trackReview = MutableStateFlow<State<TrackReview>>(State.Loading)
+    val trackReview = _trackReview.asStateFlow()
+
     init {
         loadListens()
     }
 
     fun loadListens() {
         viewModelScope.launch {
-            _days.value = State.Loading
+            _days.update { State.Loading }
             val result = withContext(Dispatchers.IO) {
                 getListensUseCase()
             }
@@ -71,8 +78,38 @@ class ListensListViewModel(
         }
     }
 
+    fun setIndexToAnalyze(dayIndex: Int, listenIndex: Int) {
+        if (dayIndex < 0 && listenIndex < 0)
+            _indexToAnalyze.update { null }
+        else
+            _indexToAnalyze.update { dayIndex to listenIndex }
+    }
+
+    fun analyzeListen() {
+        viewModelScope.launch {
+            _trackReview.update { State.Loading }
+            val listen =
+                (_days.value as State.Content).data[_indexToAnalyze.value!!.first].listens[indexToAnalyze.value!!.second]
+            withContext(Dispatchers.IO) {
+                val result = getTrackReviewUseCase(listen)
+                result.fold(
+                    onSuccess = { result ->
+                        _trackReview.update { State.Content(result) }
+                    },
+                    onFailure = { error ->
+                        _trackReview.update {
+                            State.Failure(
+                                error.message ?: "Что-то пошло не так..."
+                            )
+                        }
+                    }
+                )
+            }
+        }
+    }
+
     fun changeInsertDialogVisibility() {
-        _isInsertDialogShown.value = !_isInsertDialogShown.value
+        _isInsertDialogShown.update { !_isInsertDialogShown.value }
     }
 
     fun insertListen(artist: String, title: String) {
