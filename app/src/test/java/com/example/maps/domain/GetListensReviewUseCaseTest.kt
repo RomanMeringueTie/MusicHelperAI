@@ -1,7 +1,6 @@
 package com.example.maps.domain
 
 import com.example.maps.data.datasource.AIReviewDataSource
-import com.example.maps.data.model.ListensReview
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
@@ -25,17 +24,16 @@ class GetListensReviewUseCaseTest {
     fun `invoke returns success with review when data source succeeds`() = runTest {
         // Given
         val listens = "Test listens data"
-        val expectedListensReview = ListensReview(
-            recommendations = "Great music taste! You listen to a variety of genres"
-        )
-        coEvery { mockDataSource.get(any()) } returns expectedListensReview
+        val expectedRecommendation = "Great music taste! You listen to a variety of genres"
+
+        coEvery { mockDataSource.get(any()) } returns expectedRecommendation
 
         // When
         val result = useCase(listens)
 
         // Then
         assertTrue(result.isSuccess)
-        assertEquals(expectedListensReview, result.getOrNull())
+        assertEquals(expectedRecommendation, result.getOrNull()?.recommendations)
     }
 
     @Test
@@ -57,10 +55,9 @@ class GetListensReviewUseCaseTest {
     fun `invoke calls data source with correct listens parameter`() = runTest {
         // Given
         val listens = "Test listens data"
-        val expectedListensReview = ListensReview(
-            recommendations = "Great music taste! You listen to a variety of genres"
-        )
-        coEvery { mockDataSource.get(any()) } returns expectedListensReview
+        val expectedRecommendations =
+            "Great music taste! You listen to a variety of genres"
+        coEvery { mockDataSource.get(any()) } returns expectedRecommendations
 
         // When
         useCase(listens)
