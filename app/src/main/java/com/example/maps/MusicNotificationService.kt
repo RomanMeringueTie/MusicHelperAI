@@ -36,26 +36,26 @@ class MusicNotificationService : NotificationListenerService() {
     private val mutex = Mutex()
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
-        val extras = sbn.notification.extras
-        val sharedPreferences = getSharedPreferences("PREFS", MODE_PRIVATE)
-        val pickedApps = sharedPreferences.getStringSet("PICKED_APPS", emptySet<String>())
-        if (pickedApps?.contains(sbn.packageName) == true) {
-            val artist = extras.getString("android.text")
-            val track = extras.getString("android.title")
-            if (artist != null && track != null && track != "Музыка скоро начнётся") {
-                val repository: ListensRepository = get()
-                val listen = ListenFull(
-                    artist = artist,
-                    title = track,
-                    playedAt = System.currentTimeMillis()
-                )
-                setUserId()
-                scope.launch {
-                    mutex.withLock {
+        scope.launch {
+            mutex.withLock {
+                val extras = sbn.notification.extras
+                val sharedPreferences = getSharedPreferences("PREFS", MODE_PRIVATE)
+                val pickedApps = sharedPreferences.getStringSet("PICKED_APPS", emptySet<String>())
+                if (pickedApps?.contains(sbn.packageName) == true) {
+                    val artist = extras.getString("android.text")
+                    val track = extras.getString("android.title")
+                    if (artist != null && track != null && track != "Музыка скоро начнётся") {
+                        val repository: ListensRepository = get()
+                        val listen = ListenFull(
+                            artist = artist,
+                            title = track,
+                            playedAt = System.currentTimeMillis()
+                        )
+                        setUserId()
                         repository.insert(listen)
+                        getLastListenDate(sharedPreferences, track)
                     }
                 }
-                getLastListenDate(sharedPreferences, track)
             }
         }
     }

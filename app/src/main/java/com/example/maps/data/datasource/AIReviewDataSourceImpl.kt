@@ -10,10 +10,14 @@ class AIReviewDataSourceImpl : AIReviewDataSource {
             .generativeModel("gemini-2.0-flash")
 
         val response =
-            model.generateContent(prompt).text?.replace("*", "")
-                ?.replace(Regex("(?<=[\\n\\t]) +"), "")
-                ?.replace(Regex(" +"), " ") ?: "-"
+            model.generateContent(prompt).text?.normalize() ?: "-"
 
         return response
+    }
+
+    private fun String.normalize(): String {
+        return this.replace("*", "")
+            .replace(Regex("(?<=[\\n\\t]) +"), "")
+            .replace(Regex(" +"), " ")
     }
 }

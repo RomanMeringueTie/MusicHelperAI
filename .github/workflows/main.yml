@@ -26,8 +26,22 @@ jobs:
       - name: Grant execute permission for Gradlew
         run: chmod +x gradlew
 
-      - name: Decode google-services.json from secret
-        run: echo "${{ secrets.FIREBASE_CONFIG }}" | base64 -d > app/google-services.json
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+            python-version: '3.x'
+
+      - name: Format JSON from secret
+        env:
+              JSON_SECRET: ${{ secrets.FIREBASE_CONFIG }}
+        run: |
+                echo "$JSON_SECRET" | python -m json.tool > app/src/google-services.json
+
+      - name: Ktlint check
+        run: /gradlew ktlintCheck
+
+      - name: Build app
+        run: ./gradlew build
 
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
