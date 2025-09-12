@@ -38,7 +38,7 @@ jobs:
                 echo "$JSON_SECRET" | python -m json.tool > app/src/google-services.json
 
       - name: Ktlint check
-        run: /gradlew ktlintCheck
+        run: ./gradlew ktlintCheck
 
       - name: Build app
         run: ./gradlew build
