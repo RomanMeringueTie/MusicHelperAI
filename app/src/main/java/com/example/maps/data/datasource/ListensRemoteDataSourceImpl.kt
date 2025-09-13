@@ -3,14 +3,14 @@ package com.example.maps.data.datasource
 import com.example.maps.data.model.ListenFull
 import com.example.maps.data.model.TopArtist
 import com.example.maps.data.model.TopTrack
-import com.example.maps.data.model.UserModel
+import com.example.maps.data.model.UserSingleton
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class ListensRemoteDataSourceImpl(private val firestore: FirebaseFirestore) :
     ListensRemoteDataSource {
     override suspend fun getAll(): List<ListenFull> {
-        val userId = UserModel.userId!!
+        val userId = UserSingleton.userId!!
         val result = mutableListOf<ListenFull>()
         val listens = firestore.collection("listens")
             .whereEqualTo("userId", userId)
@@ -32,7 +32,7 @@ class ListensRemoteDataSourceImpl(private val firestore: FirebaseFirestore) :
     }
 
     override suspend fun insert(listen: ListenFull) {
-        val userId = UserModel.userId!!
+        val userId = UserSingleton.userId!!
 
         val listen =
             hashMapOf(
@@ -45,7 +45,7 @@ class ListensRemoteDataSourceImpl(private val firestore: FirebaseFirestore) :
     }
 
     override suspend fun delete(listenFull: ListenFull) {
-        val userId = UserModel.userId!!
+        val userId = UserSingleton.userId!!
         val listens = firestore.collection("listens")
             .whereEqualTo("userId", userId)
             .whereEqualTo("playedAt", listenFull.playedAt)
@@ -60,7 +60,7 @@ class ListensRemoteDataSourceImpl(private val firestore: FirebaseFirestore) :
     }
 
     override suspend fun getTopArtists(): List<TopArtist> {
-        val userId = UserModel.userId!!
+        val userId = UserSingleton.userId!!
         val result = mutableListOf<TopArtist>()
         val trackStrings = mutableListOf<String>()
         val listens = firestore.collection("listens")
@@ -84,9 +84,9 @@ class ListensRemoteDataSourceImpl(private val firestore: FirebaseFirestore) :
     }
 
     override suspend fun getTopTracks(): List<TopTrack> {
-        val userId = UserModel.userId!!
+        val userId = UserSingleton.userId!!
         val result = mutableListOf<TopTrack>()
-        val trackStrings = mutableSetOf<Pair<String, String>>()
+        val trackStrings = mutableListOf<Pair<String, String>>()
         val listens = firestore.collection("listens")
             .whereEqualTo("userId", userId)
             .get()

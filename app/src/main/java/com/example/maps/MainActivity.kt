@@ -8,7 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.core.app.NotificationManagerCompat
-import com.example.maps.data.model.UserModel
+import com.example.maps.data.model.UserSingleton
 import com.example.maps.domain.SaveUserUseCase
 import com.example.maps.ui.MainScreen
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onPause() {
         super.onPause()
-        val userId = UserModel.userId
+        val userId = UserSingleton.userId
         val saveUserUseCase: SaveUserUseCase = get()
         CoroutineScope(Dispatchers.IO).launch {
             saveUserUseCase(userId ?: "")

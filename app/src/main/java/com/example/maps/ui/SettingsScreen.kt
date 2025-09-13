@@ -52,7 +52,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.maps.R
 import com.example.maps.data.model.AppInfo
-import com.example.maps.data.model.UserModel
+import com.example.maps.data.model.UserSingleton
 import com.example.maps.presentation.SettingsViewModel
 import com.example.maps.presentation.State
 import com.example.maps.ui.utils.signOut
@@ -140,7 +140,7 @@ fun SettingsScreenImpl(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         AsyncImage(
-                            model = UserModel.picture
+                            model = UserSingleton.picture
                                 ?: "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
                             contentDescription = "Profile Image",
                             modifier = Modifier
@@ -153,7 +153,7 @@ fun SettingsScreenImpl(
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = UserModel.name
+                                text = UserSingleton.name
                                     ?: stringResource(R.string.unknown_name),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface
@@ -165,7 +165,7 @@ fun SettingsScreenImpl(
                             )
                         }
 
-                        if (UserModel.isAuthorized) {
+                        if (UserSingleton.isAuthorized) {
                             TextButton(
                                 onClick = onChangeDialogVisibility,
                             ) {

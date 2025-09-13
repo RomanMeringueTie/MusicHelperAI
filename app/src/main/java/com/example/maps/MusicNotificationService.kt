@@ -15,7 +15,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
 import com.example.maps.data.model.ListenFull
-import com.example.maps.data.model.UserModel
+import com.example.maps.data.model.UserSingleton
 import com.example.maps.data.repository.ListensRepository
 import com.example.maps.domain.GetNotificationSettingUseCase
 import com.example.maps.domain.GetUserUseCase
@@ -67,7 +67,7 @@ class MusicNotificationService : NotificationListenerService() {
             userId = getUserUseCase()
         }
         if (userId.isNotBlank()) {
-            UserModel.apply {
+            UserSingleton.apply {
                 isAuthorized = true
                 this.userId = userId
             }

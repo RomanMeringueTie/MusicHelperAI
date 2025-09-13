@@ -5,14 +5,14 @@ import com.example.maps.data.datasource.ListensRemoteDataSource
 import com.example.maps.data.model.ListenFull
 import com.example.maps.data.model.TopArtist
 import com.example.maps.data.model.TopTrack
-import com.example.maps.data.model.UserModel
+import com.example.maps.data.model.UserSingleton
 
 class ListensRepositoryImpl(
     private val localDataSource: ListensLocalDataSource,
     private val remoteDataSource: ListensRemoteDataSource,
 ) : ListensRepository {
     override suspend fun getAll(): List<ListenFull> {
-        return if (UserModel.isAuthorized && UserModel.userId != null) {
+        return if (UserSingleton.isAuthorized && UserSingleton.userId != null) {
             remoteDataSource.getAll()
         } else {
             localDataSource.getAll()
@@ -20,7 +20,7 @@ class ListensRepositoryImpl(
     }
 
     override suspend fun insert(listenFull: ListenFull) {
-        if (UserModel.isAuthorized && UserModel.userId != null) {
+        if (UserSingleton.isAuthorized && UserSingleton.userId != null) {
             remoteDataSource.insert(listenFull)
         } else {
             localDataSource.insert(listenFull)
@@ -28,7 +28,7 @@ class ListensRepositoryImpl(
     }
 
     override suspend fun delete(listenFull: ListenFull) {
-        if (UserModel.isAuthorized && UserModel.userId != null) {
+        if (UserSingleton.isAuthorized && UserSingleton.userId != null) {
             remoteDataSource.delete(listenFull)
         } else {
             localDataSource.delete(listenFull)
@@ -36,14 +36,14 @@ class ListensRepositoryImpl(
     }
 
     override suspend fun getTopArtists(): List<TopArtist> {
-        return if (UserModel.isAuthorized && UserModel.userId != null) {
+        return if (UserSingleton.isAuthorized && UserSingleton.userId != null) {
             remoteDataSource.getTopArtists()
         } else
             localDataSource.getTopArtists()
     }
 
     override suspend fun getTopTracks(): List<TopTrack> {
-        return if (UserModel.isAuthorized && UserModel.userId != null) {
+        return if (UserSingleton.isAuthorized && UserSingleton.userId != null) {
             remoteDataSource.getTopTracks()
         } else
             localDataSource.getTopTracks()
