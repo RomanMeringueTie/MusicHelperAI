@@ -101,7 +101,7 @@ class ListensRemoteDataSourceImpl(private val firestore: FirebaseFirestore) :
 
             val topTrack = TopTrack(
                 trackName = (topTrack as Pair<Pair<String, String>, Int>).first.second,
-                artistName = (topTrack as Pair<Pair<String, String>, Int>).first.first,
+                artistName = topTrack.first.first,
                 listenCount = topTrack.second
             )
             result.add(topTrack)

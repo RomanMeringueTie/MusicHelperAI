@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -52,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.maps.R
 import com.example.maps.data.model.AppInfo
+import com.example.maps.data.model.SettingsSingleton
 import com.example.maps.data.model.UserSingleton
 import com.example.maps.presentation.SettingsViewModel
 import com.example.maps.presentation.State
@@ -68,21 +70,25 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
 ) {
     val pickedApps = viewModel.pickedApps.collectAsState()
-    val isNotificationsAllowed = viewModel.isNotificationsAllowed.collectAsState()
-    val isDialogShown = viewModel.isSignOutDialogShown.collectAsState()
+    val isSignOutDialogShown = viewModel.isSignOutDialogShown.collectAsState()
+    val isPermissionDialogShown = viewModel.isPermissionDialogShown.collectAsState()
 
     SettingsScreenImpl(
         modifier = modifier,
+        isDarkTheme = SettingsSingleton.isDarkTheme,
         onThemeChange = onThemeChange,
         onRouteToPickApps = onRouteToPickApps,
         onBack = onBack,
         pickedApps = pickedApps.value,
-        isNotificationsAllowed = isNotificationsAllowed.value,
+        isNotificationsAllowed = SettingsSingleton.isNotificationsEnabled,
         onNotificationSettingChange = viewModel::onNotificationSettingChange,
         onSignIn = onSignIn,
         onSignOut = viewModel::onSignOut,
-        isDialogShown = isDialogShown.value,
-        onChangeDialogVisibility = viewModel::changeSignOutDialogVisibility
+        isSignOutDialogShown = isSignOutDialogShown.value,
+        onChangeSignOutDialogVisibility = viewModel::changeSignOutDialogVisibility,
+        isPermissionGiven = SettingsSingleton.isPermissionGiven,
+        isPermissionDialogShown = isPermissionDialogShown.value,
+        onChangePermissionDialogVisibility = viewModel::changePermissionDialogVisibility,
     )
 }
 
@@ -90,6 +96,7 @@ fun SettingsScreen(
 @Composable
 fun SettingsScreenImpl(
     modifier: Modifier = Modifier,
+    isDarkTheme: Boolean,
     onThemeChange: () -> Unit,
     onRouteToPickApps: () -> Unit,
     onBack: () -> Unit,
@@ -98,10 +105,12 @@ fun SettingsScreenImpl(
     onNotificationSettingChange: (Boolean) -> Unit,
     onSignIn: () -> Unit,
     onSignOut: () -> Unit,
-    isDialogShown: Boolean,
-    onChangeDialogVisibility: () -> Unit,
+    isSignOutDialogShown: Boolean,
+    onChangeSignOutDialogVisibility: () -> Unit,
+    isPermissionGiven: Boolean,
+    isPermissionDialogShown: Boolean,
+    onChangePermissionDialogVisibility: () -> Unit,
 ) {
-
     val context = LocalContext.current
 
     Scaffold(
@@ -167,7 +176,7 @@ fun SettingsScreenImpl(
 
                         if (UserSingleton.isAuthorized) {
                             TextButton(
-                                onClick = onChangeDialogVisibility,
+                                onClick = onChangeSignOutDialogVisibility,
                             ) {
                                 Text(
                                     stringResource(R.string.sign_out),
@@ -196,7 +205,7 @@ fun SettingsScreenImpl(
                 ) {
                     SettingsItem(
                         title = stringResource(R.string.change_theme),
-                        subtitle = "Светлая/тёмная",
+                        subtitle = if (isDarkTheme) "Тёмная" else "Светлая",
                         icon = ImageVector.vectorResource(R.drawable.theme_icon),
                         onClick = onThemeChange
                     )
@@ -226,7 +235,17 @@ fun SettingsScreenImpl(
                         }
                     }
 
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
 
+                    SettingsItem(
+                        title = "Разрешение",
+                        subtitle = "На получение данных из уведомлений: ${if (isPermissionGiven) "Выдано" else "Не выдано"}",
+                        icon = Icons.AutoMirrored.Filled.Send,
+                        onClick = onChangePermissionDialogVisibility
+                    )
 
                     HorizontalDivider(
                         modifier = Modifier.padding(vertical = 8.dp),
@@ -243,10 +262,16 @@ fun SettingsScreenImpl(
                 }
             }
         }
-        if (isDialogShown) {
+        if (isSignOutDialogShown) {
             SignOutDialog(
                 onConfirm = { signOut(context); onSignOut() },
-                onDismiss = onChangeDialogVisibility
+                onDismiss = onChangeSignOutDialogVisibility
+            )
+        }
+
+        if (isPermissionDialogShown) {
+            AskPermissionDialog(
+                onDismissRequest = onChangePermissionDialogVisibility
             )
         }
     }

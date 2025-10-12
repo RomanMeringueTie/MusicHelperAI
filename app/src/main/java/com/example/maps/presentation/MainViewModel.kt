@@ -2,6 +2,7 @@ package com.example.maps.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.maps.data.model.SettingsSingleton
 import com.example.maps.domain.GetPermissionUseCase
 import com.example.maps.domain.GetPickedAppsUseCase
 import kotlinx.coroutines.Dispatchers
@@ -12,18 +13,12 @@ import kotlinx.coroutines.withContext
 
 class MainViewModel(
     getPickedAppsUseCase: GetPickedAppsUseCase,
-    getPermissionUseCase: GetPermissionUseCase,
 ) : ViewModel() {
-    private val _isDarkTheme = MutableStateFlow(false)
-    val isDarkTheme = _isDarkTheme.asStateFlow()
-    private val _isPermission = MutableStateFlow(false)
-    val isPermission = _isPermission.asStateFlow()
     private val _isAppsPicked = MutableStateFlow(false)
     val isAppsPicked = _isAppsPicked.asStateFlow()
 
     init {
         viewModelScope.launch {
-            _isPermission.value = withContext(Dispatchers.IO) { getPermissionUseCase() }
             val isAppsPickedResult = withContext(Dispatchers.IO) { getPickedAppsUseCase() }
             isAppsPickedResult.fold(
                 onSuccess = {
@@ -37,6 +32,6 @@ class MainViewModel(
     }
 
     fun changeTheme() {
-        _isDarkTheme.value = _isDarkTheme.value.not()
+        SettingsSingleton.isDarkTheme = !SettingsSingleton.isDarkTheme
     }
 }

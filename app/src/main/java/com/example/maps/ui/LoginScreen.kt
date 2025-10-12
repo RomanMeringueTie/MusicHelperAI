@@ -41,7 +41,6 @@ fun LoginScreen(modifier: Modifier, viewModel: LoginViewModel, onRoute: () -> Un
 
     val launcher =
         rememberLauncherForActivityResult(FirebaseAuthUIActivityResultContract()) { res ->
-            onRoute()
             if (res.resultCode == RESULT_OK) {
                 viewModel.onSignIn()
                 val user = FirebaseAuth.getInstance().currentUser
@@ -53,6 +52,7 @@ fun LoginScreen(modifier: Modifier, viewModel: LoginViewModel, onRoute: () -> Un
                 val error = result?.error?.message ?: context.getString(R.string.auth_error)
                 failureToast(context, error)
             }
+            onRoute()
         }
 
     LaunchedEffect(Unit) { launcher.launch(signInIntent) }

@@ -2,20 +2,20 @@ package com.example.maps.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.maps.data.datasource.AIReviewDataSource
+import com.example.maps.data.datasource.AIReviewDataSourceImpl
 import com.example.maps.data.datasource.InstalledAppsDataSource
 import com.example.maps.data.datasource.InstalledAppsDataSourceImpl
 import com.example.maps.data.datasource.ListensLocalDataSource
 import com.example.maps.data.datasource.ListensLocalDataSourceImpl
 import com.example.maps.data.datasource.ListensRemoteDataSource
 import com.example.maps.data.datasource.ListensRemoteDataSourceImpl
-import com.example.maps.data.datasource.AIReviewDataSource
-import com.example.maps.data.datasource.AIReviewDataSourceImpl
-import com.example.maps.data.datasource.NotificationSettingDataSource
-import com.example.maps.data.datasource.NotificationSettingDataSourceImpl
 import com.example.maps.data.datasource.PermissionDataSource
 import com.example.maps.data.datasource.PermissionDataSourceImpl
 import com.example.maps.data.datasource.PickedAppsDataSource
 import com.example.maps.data.datasource.PickedAppsDataSourceImpl
+import com.example.maps.data.datasource.SettingsDataSource
+import com.example.maps.data.datasource.SettingsDataSourceImpl
 import com.example.maps.data.datasource.UserDataSource
 import com.example.maps.data.datasource.UserDataSourceImpl
 import com.example.maps.data.db.AppDatabase
@@ -31,8 +31,6 @@ import com.example.maps.domain.GetListensReviewUseCase
 import com.example.maps.domain.GetListensReviewUseCaseImpl
 import com.example.maps.domain.GetListensUseCase
 import com.example.maps.domain.GetListensUseCaseImpl
-import com.example.maps.domain.GetNotificationSettingUseCase
-import com.example.maps.domain.GetNotificationSettingUseCaseImpl
 import com.example.maps.domain.GetPermissionUseCase
 import com.example.maps.domain.GetPermissionUseCaseImpl
 import com.example.maps.domain.GetPickedAppsUseCase
@@ -49,8 +47,6 @@ import com.example.maps.domain.InsertListenUseCase
 import com.example.maps.domain.InsertListenUseCaseImpl
 import com.example.maps.domain.SaveUserUseCase
 import com.example.maps.domain.SaveUserUseCaseImpl
-import com.example.maps.domain.SetNotificationSettingUseCase
-import com.example.maps.domain.SetNotificationSettingUseCaseImpl
 import com.example.maps.domain.SetPickedAppsUseCase
 import com.example.maps.domain.SetPickedAppsUseCaseImpl
 import com.example.maps.domain.SignInUseCase
@@ -58,6 +54,7 @@ import com.example.maps.domain.SignInUseCaseImpl
 import com.example.maps.domain.SignOutUseCase
 import com.example.maps.domain.SignOutUseCaseImpl
 import com.example.maps.presentation.AnalysisViewModel
+import com.example.maps.presentation.AskPermissionViewModel
 import com.example.maps.presentation.ListensListViewModel
 import com.example.maps.presentation.LoginViewModel
 import com.example.maps.presentation.MainViewModel
@@ -112,12 +109,12 @@ val appModule = module {
     single {
         Firebase.firestore
     }
+    singleOf(::SettingsDataSourceImpl) { bind<SettingsDataSource>() }
     singleOf(::ListensLocalDataSourceImpl) { bind<ListensLocalDataSource>() }
     singleOf(::ListensRemoteDataSourceImpl) { bind<ListensRemoteDataSource>() }
     singleOf(::UserDataSourceImpl) { bind<UserDataSource>() }
     singleOf(::InstalledAppsDataSourceImpl) { bind<InstalledAppsDataSource>() }
     singleOf(::AIReviewDataSourceImpl) { bind<AIReviewDataSource>() }
-    singleOf(::NotificationSettingDataSourceImpl) { bind<NotificationSettingDataSource>() }
     singleOf(::PermissionDataSourceImpl) { bind<PermissionDataSource>() }
     singleOf(::PickedAppsDataSourceImpl) { bind<PickedAppsDataSource>() }
     singleOf(::SaveUserUseCaseImpl) { bind<SaveUserUseCase>() }
@@ -125,8 +122,6 @@ val appModule = module {
     singleOf(::GetUserUseCaseImpl) { bind<GetUserUseCase>() }
     singleOf(::SignInUseCaseImpl) { bind<SignInUseCase>() }
     singleOf(::SignOutUseCaseImpl) { bind<SignOutUseCase>() }
-    singleOf(::GetNotificationSettingUseCaseImpl) { bind<GetNotificationSettingUseCase>() }
-    singleOf(::SetNotificationSettingUseCaseImpl) { bind<SetNotificationSettingUseCase>() }
     singleOf(::GetListensReviewUseCaseImpl) { bind<GetListensReviewUseCase>() }
     singleOf(::GetInstalledAppsUseCaseImpl) { bind<GetInstalledAppsUseCase>() }
     singleOf(::SetPickedAppsUseCaseImpl) { bind<SetPickedAppsUseCase>() }
@@ -140,4 +135,5 @@ val appModule = module {
     viewModelOf(::AnalysisViewModel)
     viewModelOf(::StatsViewModel)
     viewModelOf(::LoginViewModel)
+    viewModelOf(::AskPermissionViewModel)
 }

@@ -1,6 +1,5 @@
 package com.example.maps.domain
 
-import com.example.maps.data.datasource.NotificationSettingDataSource
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

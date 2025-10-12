@@ -15,9 +15,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
 import com.example.maps.data.model.ListenFull
+import com.example.maps.data.model.SettingsSingleton
 import com.example.maps.data.model.UserSingleton
 import com.example.maps.data.repository.ListensRepository
-import com.example.maps.domain.GetNotificationSettingUseCase
 import com.example.maps.domain.GetUserUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -78,10 +78,8 @@ class MusicNotificationService : NotificationListenerService() {
         val sdf = SimpleDateFormat("dd.M.yy", Locale.getDefault())
         val currentDate = sdf.format(Date())
         val lastListenDate = sharedPreferences.getString("LAST_DATE", null)
-        val getNotificationSettingUseCase: GetNotificationSettingUseCase = get()
         scope.launch {
-            val isNotificationsAllowed = getNotificationSettingUseCase()
-            if (currentDate != lastListenDate && isNotificationsAllowed) {
+            if (currentDate != lastListenDate && SettingsSingleton.isNotificationsEnabled) {
                 sendNotification(sharedPreferences, currentDate, trackTitle)
             }
         }

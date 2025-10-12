@@ -1,38 +1,50 @@
 package com.example.maps.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.maps.data.model.SettingsSingleton
 import com.example.maps.presentation.MainViewModel
 import com.example.maps.ui.theme.MapsTheme
 import com.example.maps.ui.utils.EnterAnimation
 import org.koin.androidx.compose.koinViewModel
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Composable
 fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
 
-    val isDarkTheme = viewModel.isDarkTheme.collectAsState()
     val navController = rememberNavController()
-    val isAppsPicked = viewModel.isAppsPicked.collectAsState()
+    val isFirstTime = SettingsSingleton.isFirstRun
+    val startDestination by lazy {
+        if (isFirstTime) {
+            "FIRST"
+        } else if (SettingsSingleton.isGuest) {
+            "LISTENS_LIST"
+        } else "LOG_IN"
+    }
 
-    MapsTheme(darkTheme = isDarkTheme.value) {
+    MapsTheme(darkTheme = SettingsSingleton.isDarkTheme) {
         Scaffold(modifier = modifier) { innerPadding ->
-            NavHost(navController = navController, startDestination = "LOG_IN") {
+            NavHost(navController = navController, startDestination = startDestination) {
+                composable("FIRST") {
+                    FirstTimeRunScreen(
+                        onRouteToNext = { navController.navigate("LISTENS_LIST") }
+                    )
+                }
                 composable("LOG_IN") {
-                    val nextRoute = if (isAppsPicked.value) "LISTENS_LIST" else "PICK_APPS"
                     LoginScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(innerPadding),
                         viewModel = koinViewModel(),
                         onRoute = {
-                            navController.navigate(nextRoute) {
+                            navController.navigate("LISTENS_LIST") {
                                 popUpTo("LOG_IN") { inclusive = true }
                             }
                         }

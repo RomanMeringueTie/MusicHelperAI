@@ -1,13 +1,12 @@
 package com.example.maps
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import androidx.core.app.NotificationManagerCompat
+import com.example.maps.data.datasource.SettingsDataSource
 import com.example.maps.data.model.UserSingleton
 import com.example.maps.domain.SaveUserUseCase
 import com.example.maps.ui.MainScreen
@@ -19,30 +18,37 @@ import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
 
+    private val settingsDataSource: SettingsDataSource by lazy { get() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val enabledPackages =
-            NotificationManagerCompat.getEnabledListenerPackages(applicationContext)
-        if (!enabledPackages.contains("com.example.maps")) {
-            val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-            startActivity(intent)
-        }
-        enableEdgeToEdge()
+        getSettings()
 
+        enableEdgeToEdge()
         setContent {
             MainScreen(
                 modifier = Modifier.fillMaxSize(),
                 viewModel = koinViewModel(),
             )
         }
-
     }
 
     override fun onPause() {
         super.onPause()
-        val userId = UserSingleton.userId
-        val saveUserUseCase: SaveUserUseCase = get()
+        saveSettings()
+    }
+
+    private fun getSettings() {
         CoroutineScope(Dispatchers.IO).launch {
+            settingsDataSource.get()
+        }
+    }
+
+    private fun saveSettings() {
+        CoroutineScope(Dispatchers.IO).launch {
+            settingsDataSource.save()
+            val userId = UserSingleton.userId
+            val saveUserUseCase: SaveUserUseCase = get()
             saveUserUseCase(userId ?: "")
         }
     }

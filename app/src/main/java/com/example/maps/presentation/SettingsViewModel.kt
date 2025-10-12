@@ -3,9 +3,8 @@ package com.example.maps.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.maps.data.model.AppInfo
+import com.example.maps.data.model.SettingsSingleton
 import com.example.maps.domain.GetInstalledAppsUseCase
-import com.example.maps.domain.GetNotificationSettingUseCase
-import com.example.maps.domain.SetNotificationSettingUseCase
 import com.example.maps.domain.SignOutUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +14,6 @@ import kotlinx.coroutines.withContext
 
 class SettingsViewModel(
     private val getInstalledAppsUseCase: GetInstalledAppsUseCase,
-    private val getNotificationSettingUseCase: GetNotificationSettingUseCase,
-    private val setNotificationSettingUseCase: SetNotificationSettingUseCase,
     private val signOutUseCase: SignOutUseCase,
 ) :
     ViewModel() {
@@ -24,18 +21,15 @@ class SettingsViewModel(
         MutableStateFlow(State.Loading)
     val pickedApps = _pickedApps.asStateFlow()
 
-    private val _isNotificationsAllowed = MutableStateFlow<Boolean?>(null)
-    val isNotificationsAllowed = _isNotificationsAllowed.asStateFlow()
-
     private val _isSignOutDialogShown = MutableStateFlow(false)
     val isSignOutDialogShown = _isSignOutDialogShown.asStateFlow()
 
+    private val _isPermissionDialogShown = MutableStateFlow(false)
+    val isPermissionDialogShown = _isPermissionDialogShown.asStateFlow()
+
     init {
         viewModelScope.launch {
-            _isNotificationsAllowed.value =
-                withContext(Dispatchers.IO) { getNotificationSettingUseCase() }
             val pickedAppsResult = withContext(Dispatchers.IO) { getInstalledAppsUseCase() }
-
             pickedAppsResult.fold(
                 onSuccess = {
                     _pickedApps.value = State.Content(it.filter { it.isPicked == true })
@@ -48,14 +42,15 @@ class SettingsViewModel(
     }
 
     fun onNotificationSettingChange(isAllowed: Boolean) {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) { setNotificationSettingUseCase(isAllowed) }
-        }
-        _isNotificationsAllowed.value = isAllowed
+        SettingsSingleton.isNotificationsEnabled = isAllowed
     }
 
     fun changeSignOutDialogVisibility() {
         _isSignOutDialogShown.value = !_isSignOutDialogShown.value
+    }
+
+    fun changePermissionDialogVisibility() {
+        _isPermissionDialogShown.value = !_isPermissionDialogShown.value
     }
 
     fun onSignOut() {
