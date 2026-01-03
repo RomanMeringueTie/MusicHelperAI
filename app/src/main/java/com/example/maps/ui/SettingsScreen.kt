@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
@@ -51,12 +52,15 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.maps.BuildConfig
 import com.example.maps.R
 import com.example.maps.data.model.AppInfo
 import com.example.maps.data.model.SettingsSingleton
 import com.example.maps.data.model.UserSingleton
+import com.example.maps.presentation.DebugPanelViewModel
 import com.example.maps.presentation.SettingsViewModel
 import com.example.maps.presentation.State
+import com.example.maps.toggles.TogglesHolder
 import com.example.maps.ui.utils.signOut
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,11 +71,13 @@ fun SettingsScreen(
     onRouteToPickApps: () -> Unit,
     onBack: () -> Unit,
     onSignIn: () -> Unit,
-    viewModel: SettingsViewModel,
+    settingsViewModel: SettingsViewModel,
+    debugPanelViewModel: DebugPanelViewModel,
 ) {
-    val pickedApps = viewModel.pickedApps.collectAsState()
-    val isSignOutDialogShown = viewModel.isSignOutDialogShown.collectAsState()
-    val isPermissionDialogShown = viewModel.isPermissionDialogShown.collectAsState()
+    val pickedApps = settingsViewModel.pickedApps.collectAsState()
+    val isSignOutDialogShown = settingsViewModel.isSignOutDialogShown.collectAsState()
+    val isPermissionDialogShown = settingsViewModel.isPermissionDialogShown.collectAsState()
+    val isTogglesEnabled = debugPanelViewModel.isTogglesEnabled.collectAsState()
 
     SettingsScreenImpl(
         modifier = modifier,
@@ -81,14 +87,16 @@ fun SettingsScreen(
         onBack = onBack,
         pickedApps = pickedApps.value,
         isNotificationsAllowed = SettingsSingleton.isNotificationsEnabled,
-        onNotificationSettingChange = viewModel::onNotificationSettingChange,
+        onNotificationSettingChange = settingsViewModel::onNotificationSettingChange,
         onSignIn = onSignIn,
-        onSignOut = viewModel::onSignOut,
+        onSignOut = settingsViewModel::onSignOut,
         isSignOutDialogShown = isSignOutDialogShown.value,
-        onChangeSignOutDialogVisibility = viewModel::changeSignOutDialogVisibility,
+        onChangeSignOutDialogVisibility = settingsViewModel::changeSignOutDialogVisibility,
         isPermissionGiven = SettingsSingleton.isPermissionGiven,
         isPermissionDialogShown = isPermissionDialogShown.value,
-        onChangePermissionDialogVisibility = viewModel::changePermissionDialogVisibility,
+        onChangePermissionDialogVisibility = settingsViewModel::changePermissionDialogVisibility,
+        isTogglesEnabled = isTogglesEnabled.value,
+        onToggleStateChanged = debugPanelViewModel::changeToggleState
     )
 }
 
@@ -110,6 +118,8 @@ fun SettingsScreenImpl(
     isPermissionGiven: Boolean,
     isPermissionDialogShown: Boolean,
     onChangePermissionDialogVisibility: () -> Unit,
+    isTogglesEnabled: List<Boolean>,
+    onToggleStateChanged: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -261,6 +271,11 @@ fun SettingsScreenImpl(
                     )
                 }
             }
+            if (BuildConfig.DEBUG) {
+                item {
+                    DebugPanel(isTogglesEnabled, onToggleStateChanged)
+                }
+            }
         }
         if (isSignOutDialogShown) {
             SignOutDialog(
@@ -273,6 +288,32 @@ fun SettingsScreenImpl(
             AskPermissionDialog(
                 onDismissRequest = onChangePermissionDialogVisibility
             )
+        }
+    }
+}
+
+@Composable
+private fun DebugPanel(isTogglesEnabled: List<Boolean>, onToggleStateChanged: () -> Unit) {
+    val toggles = TogglesHolder.getAll()
+
+    SettingsSection(
+        title = stringResource(R.string.debug_panel),
+        icon = Icons.Default.Build
+    ) {
+        toggles.forEachIndexed { index, toggle ->
+            SettingsItemWithSwitch(
+                title = toggle.title,
+                subtitle = toggle.description,
+                icon = Icons.Default.Build,
+                onClick = { toggle.changeState(); onToggleStateChanged() },
+                isChecked = isTogglesEnabled[index]
+            )
+            if (toggle != toggles.last()) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.outlineVariant
+                )
+            }
         }
     }
 }

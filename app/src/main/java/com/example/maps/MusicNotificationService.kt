@@ -19,6 +19,7 @@ import com.example.maps.data.model.SettingsSingleton
 import com.example.maps.data.model.UserSingleton
 import com.example.maps.data.repository.ListensRepository
 import com.example.maps.domain.GetUserUseCase
+import com.example.maps.toggles.ListensFilterToggle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,13 +39,12 @@ class MusicNotificationService : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         scope.launch {
             mutex.withLock {
-                val extras = sbn.notification.extras
-                val sharedPreferences = getSharedPreferences("PREFS", MODE_PRIVATE)
-                val pickedApps = sharedPreferences.getStringSet("PICKED_APPS", emptySet<String>())
-                if (pickedApps?.contains(sbn.packageName) == true) {
+                if (BuildConfig.DEBUG && !ListensFilterToggle.isEnabled()) {
+                    val extras = sbn.notification.extras
+                    val sharedPreferences = getSharedPreferences("PREFS", MODE_PRIVATE)
                     val artist = extras.getString("android.text")
                     val track = extras.getString("android.title")
-                    if (artist != null && track != null && track != "Музыка скоро начнётся") {
+                    if (artist != null && track != null) {
                         val repository: ListensRepository = get()
                         val listen = ListenFull(
                             artist = artist,
@@ -54,6 +54,26 @@ class MusicNotificationService : NotificationListenerService() {
                         setUserId()
                         repository.insert(listen)
                         getLastListenDate(sharedPreferences, track)
+                    }
+                } else {
+                    val extras = sbn.notification.extras
+                    val sharedPreferences = getSharedPreferences("PREFS", MODE_PRIVATE)
+                    val pickedApps =
+                        sharedPreferences.getStringSet("PICKED_APPS", emptySet<String>())
+                    if (pickedApps?.contains(sbn.packageName) == true) {
+                        val artist = extras.getString("android.text")
+                        val track = extras.getString("android.title")
+                        if (artist != null && track != null && track != "Музыка скоро начнётся") {
+                            val repository: ListensRepository = get()
+                            val listen = ListenFull(
+                                artist = artist,
+                                title = track,
+                                playedAt = System.currentTimeMillis()
+                            )
+                            setUserId()
+                            repository.insert(listen)
+                            getLastListenDate(sharedPreferences, track)
+                        }
                     }
                 }
             }

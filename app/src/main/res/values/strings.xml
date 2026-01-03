@@ -27,6 +27,7 @@
     <string name="unknown_name">Гость</string>
     <string name="profile">Профиль</string>
     <string name="app">Приложение</string>
+    <string name="debug_panel">Дебаг-панель</string>
     <string name="empty_listens_placeholder_title">Тут будут прослушанные вами треки</string>
     <string name="empty_listens_placeholder_body">Послушайте музыку в ваших приложениях или добавьте вручную</string>
     <string name="delete_listen_confirm_title">Подтвердите удаление</string>

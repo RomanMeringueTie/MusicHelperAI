@@ -2,8 +2,6 @@ package com.example.maps.di
 
 import android.content.ContentResolver
 import android.content.Context
-import com.example.maps.data.service.AuthServiceImpl
-import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.test.verify.definition

@@ -1,8 +1,8 @@
 package com.example.maps.domain
 
 import android.annotation.SuppressLint
-import com.example.maps.data.model.AppInfo
 import com.example.maps.data.datasource.InstalledAppsDataSource
+import com.example.maps.data.model.AppInfo
 
 class GetInstalledAppsUseCaseImpl(
     private val installedAppsDataSource: InstalledAppsDataSource,

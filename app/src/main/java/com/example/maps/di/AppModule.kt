@@ -55,6 +55,8 @@ import com.example.maps.domain.SignOutUseCase
 import com.example.maps.domain.SignOutUseCaseImpl
 import com.example.maps.presentation.AnalysisViewModel
 import com.example.maps.presentation.AskPermissionViewModel
+import com.example.maps.presentation.DebugPanelViewModel
+import com.example.maps.presentation.FirstTimeRunViewModel
 import com.example.maps.presentation.ListensListViewModel
 import com.example.maps.presentation.LoginViewModel
 import com.example.maps.presentation.MainViewModel
@@ -70,6 +72,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val appModule = module {
+    // room
     single {
         Room.databaseBuilder(
             androidContext(),
@@ -91,12 +94,8 @@ val appModule = module {
         val db: AppDatabase = get()
         db.TrackDao()
     }
-    singleOf(::ListensRepositoryImpl) { bind<ListensRepository>() }
-    singleOf(::AuthServiceImpl) { bind<AuthService>() }
-    singleOf(::GetListensUseCaseImpl) { bind<GetListensUseCase>() }
-    singleOf(::DeleteListenUseCaseImpl) { bind<DeleteListenUseCase>() }
-    singleOf(::InsertListenUseCaseImpl) { bind<InsertListenUseCase>() }
-    viewModelOf(::ListensListViewModel)
+
+    // context
     single {
         androidContext().packageManager
     }
@@ -106,9 +105,19 @@ val appModule = module {
     single {
         androidContext().contentResolver
     }
+
+    //firebase
     single {
         Firebase.firestore
     }
+
+    // repositories
+    singleOf(::ListensRepositoryImpl) { bind<ListensRepository>() }
+
+    // services
+    singleOf(::AuthServiceImpl) { bind<AuthService>() }
+
+    // data sources
     singleOf(::SettingsDataSourceImpl) { bind<SettingsDataSource>() }
     singleOf(::ListensLocalDataSourceImpl) { bind<ListensLocalDataSource>() }
     singleOf(::ListensRemoteDataSourceImpl) { bind<ListensRemoteDataSource>() }
@@ -117,6 +126,11 @@ val appModule = module {
     singleOf(::AIReviewDataSourceImpl) { bind<AIReviewDataSource>() }
     singleOf(::PermissionDataSourceImpl) { bind<PermissionDataSource>() }
     singleOf(::PickedAppsDataSourceImpl) { bind<PickedAppsDataSource>() }
+
+    // use cases
+    singleOf(::GetListensUseCaseImpl) { bind<GetListensUseCase>() }
+    singleOf(::DeleteListenUseCaseImpl) { bind<DeleteListenUseCase>() }
+    singleOf(::InsertListenUseCaseImpl) { bind<InsertListenUseCase>() }
     singleOf(::SaveUserUseCaseImpl) { bind<SaveUserUseCase>() }
     singleOf(::GetTrackReviewUseCaseImpl) { bind<GetTrackReviewUseCase>() }
     singleOf(::GetUserUseCaseImpl) { bind<GetUserUseCase>() }
@@ -129,11 +143,16 @@ val appModule = module {
     singleOf(::GetPickedAppsUseCaseImpl) { bind<GetPickedAppsUseCase>() }
     singleOf(::GetTopArtistsUseCaseImpl) { bind<GetTopArtistsUseCase>() }
     singleOf(::GetTopTracksUseCaseImpl) { bind<GetTopTracksUseCase>() }
+
+    // view models
+    viewModelOf(::ListensListViewModel)
     viewModelOf(::MainViewModel)
     viewModelOf(::SettingsViewModel)
+    viewModelOf(::DebugPanelViewModel)
     viewModelOf(::PickAppsViewModel)
     viewModelOf(::AnalysisViewModel)
     viewModelOf(::StatsViewModel)
     viewModelOf(::LoginViewModel)
     viewModelOf(::AskPermissionViewModel)
+    viewModelOf(::FirstTimeRunViewModel)
 }

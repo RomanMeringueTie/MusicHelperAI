@@ -9,6 +9,7 @@ plugins {
 android {
     namespace = "com.example.maps"
     compileSdk = 35
+    android.buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "com.example.maps"
@@ -19,9 +20,14 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         signingConfig = signingConfigs.getByName("debug")
+        buildConfigField("boolean", "IS_DEBUG", "false")
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "IS_DEBUG", "true")
+        }
+
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -29,6 +35,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("boolean", "IS_DEBUG", "false")
         }
     }
     compileOptions {

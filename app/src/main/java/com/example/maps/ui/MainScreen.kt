@@ -33,9 +33,22 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
         Scaffold(modifier = modifier) { innerPadding ->
             NavHost(navController = navController, startDestination = startDestination) {
                 composable("FIRST") {
-                    FirstTimeRunScreen(
-                        onRouteToNext = { navController.navigate("LISTENS_LIST") }
-                    )
+                    EnterAnimation {
+                        FirstTimeRunScreen(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding),
+                            onRouteToNext = {
+                                navController.navigate("LISTENS_LIST") {
+                                    popUpTo("FIRST") { inclusive = true }
+                                }
+                            },
+                            onRouteToSignIn = { navController.navigate("LOG_IN") },
+                            viewModel = koinViewModel(),
+                            onThemeChange = viewModel::changeTheme,
+                            onRouteToPickApps = { navController.navigate("PICK_APPS") }
+                        )
+                    }
                 }
                 composable("LOG_IN") {
                     LoginScreen(
@@ -103,8 +116,9 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
                             onThemeChange = viewModel::changeTheme,
                             onRouteToPickApps = { navController.navigate("PICK_APPS") },
                             onBack = navController::navigateUp,
-                            viewModel = koinViewModel(),
-                            onSignIn = { navController.navigate("LOG_IN") }
+                            settingsViewModel = koinViewModel(),
+                            onSignIn = { navController.navigate("LOG_IN") },
+                            debugPanelViewModel = koinViewModel()
                         )
                     }
                 }
