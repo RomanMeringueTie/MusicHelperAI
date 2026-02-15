@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.maps"
+    namespace = "com.example.music_helper"
     compileSdk = 35
     android.buildFeatures.buildConfig = true
 
