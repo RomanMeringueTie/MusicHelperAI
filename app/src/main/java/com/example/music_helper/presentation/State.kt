@@ -1,5 +1,6 @@
 package com.example.music_helper.presentation
 
+// TODO (Move to common-api)
 interface State<out T> {
     data object Loading : State<Nothing>
     data class Content<T>(val data: T) : State<T>

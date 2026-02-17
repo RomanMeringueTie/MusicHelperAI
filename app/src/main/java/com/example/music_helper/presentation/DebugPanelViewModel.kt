@@ -1,7 +1,7 @@
 package com.example.music_helper.presentation
 
 import androidx.lifecycle.ViewModel
-import com.example.music_helper.toggles.TogglesHolder
+import com.example.music_helper.common.api.toggles.TogglesHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

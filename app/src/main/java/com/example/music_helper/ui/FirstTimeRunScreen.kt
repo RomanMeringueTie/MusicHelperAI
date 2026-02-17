@@ -44,9 +44,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.music_helper.R
-import com.example.music_helper.data.model.AppInfo
-import com.example.music_helper.data.model.SettingsSingleton
-import com.example.music_helper.data.model.UserSingleton
+import com.example.music_helper.common.api.model.SettingsSingleton
+import com.example.music_helper.common.api.model.UserSingleton
+import com.example.music_helper.feature.apps.api.AppInfo
 import com.example.music_helper.presentation.FirstTimeRunViewModel
 import com.example.music_helper.presentation.State
 

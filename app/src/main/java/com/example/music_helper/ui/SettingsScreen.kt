@@ -54,13 +54,13 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.example.music_helper.BuildConfig
 import com.example.music_helper.R
-import com.example.music_helper.data.model.AppInfo
-import com.example.music_helper.data.model.SettingsSingleton
-import com.example.music_helper.data.model.UserSingleton
+import com.example.music_helper.common.api.model.SettingsSingleton
+import com.example.music_helper.common.api.model.UserSingleton
+import com.example.music_helper.common.api.toggles.TogglesHolder
+import com.example.music_helper.feature.apps.api.AppInfo
 import com.example.music_helper.presentation.DebugPanelViewModel
 import com.example.music_helper.presentation.SettingsViewModel
 import com.example.music_helper.presentation.State
-import com.example.music_helper.toggles.TogglesHolder
 import com.example.music_helper.ui.utils.signOut
 
 @OptIn(ExperimentalMaterial3Api::class)

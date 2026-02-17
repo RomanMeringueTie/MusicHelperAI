@@ -2,9 +2,9 @@ package com.example.music_helper.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.music_helper.data.model.AppInfo
-import com.example.music_helper.domain.GetInstalledAppsUseCase
-import com.example.music_helper.domain.SetPickedAppsUseCase
+import com.example.music_helper.feature.apps.api.AppInfo
+import com.example.music_helper.feature.apps.api.GetInstalledAppsUseCase
+import com.example.music_helper.feature.settings.api.domain.SetPickedAppsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

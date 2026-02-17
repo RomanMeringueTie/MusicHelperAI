@@ -15,7 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.music_helper.R
-import com.example.music_helper.data.model.SettingsSingleton
+import com.example.music_helper.common.api.model.SettingsSingleton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

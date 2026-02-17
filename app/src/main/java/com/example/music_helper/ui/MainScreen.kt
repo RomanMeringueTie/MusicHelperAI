@@ -9,9 +9,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.music_helper.data.model.SettingsSingleton
+import com.example.music_helper.common.api.model.SettingsSingleton
+import com.example.music_helper.common.api.theme.MapsTheme
 import com.example.music_helper.presentation.MainViewModel
-import com.example.music_helper.ui.theme.MapsTheme
 import com.example.music_helper.ui.utils.EnterAnimation
 import org.koin.androidx.compose.koinViewModel
 

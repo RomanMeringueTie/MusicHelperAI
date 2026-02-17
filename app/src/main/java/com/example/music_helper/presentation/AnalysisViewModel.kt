@@ -2,9 +2,9 @@ package com.example.music_helper.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.music_helper.data.model.ListensReview
-import com.example.music_helper.domain.GetListensReviewUseCase
-import com.example.music_helper.domain.GetListensUseCase
+import com.example.music_helper.feature.analysis.api.model.ListensReview
+import com.example.music_helper.feature.analysis.api.domain.GetListensReviewUseCase
+import com.example.music_helper.feature.listens.api.domain.GetListensUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

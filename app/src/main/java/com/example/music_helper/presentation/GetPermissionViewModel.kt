@@ -1,6 +1,6 @@
 package com.example.music_helper.presentation
 
-import com.example.music_helper.domain.GetPermissionUseCase
+import com.example.music_helper.feature.permission.api.domain.GetPermissionUseCase
 
 class GetPermissionViewModel(getPermissionUseCase: GetPermissionUseCase) {
 //    fun f(){

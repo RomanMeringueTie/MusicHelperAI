@@ -44,8 +44,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.music_helper.R
-import com.example.music_helper.data.model.TopArtist
-import com.example.music_helper.data.model.TopTrack
+import com.example.music_helper.feature.listens.api.model.TopArtist
+import com.example.music_helper.feature.listens.api.model.TopTrack
 import com.example.music_helper.presentation.State
 import com.example.music_helper.presentation.StatsViewModel
 

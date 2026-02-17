@@ -77,9 +77,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.music_helper.R
-import com.example.music_helper.data.model.Day
-import com.example.music_helper.data.model.ListenFull
-import com.example.music_helper.data.model.TrackReview
+import com.example.music_helper.feature.listens.api.model.Day
+import com.example.music_helper.feature.listens.api.model.ListenFull
+import com.example.music_helper.feature.analysis.api.model.TrackReview
 import com.example.music_helper.presentation.ListensListViewModel
 import com.example.music_helper.presentation.State
 import com.example.music_helper.ui.utils.EnterAnimation

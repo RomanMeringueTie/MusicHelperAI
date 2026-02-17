@@ -42,7 +42,7 @@ import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.music_helper.R
-import com.example.music_helper.data.model.ListensReview
+import com.example.music_helper.feature.analysis.api.model.ListensReview
 import com.example.music_helper.presentation.AnalysisViewModel
 import com.example.music_helper.presentation.State
 import com.example.music_helper.ui.utils.EnterAnimation

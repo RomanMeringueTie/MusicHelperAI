@@ -6,9 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import com.example.music_helper.data.datasource.SettingsDataSource
-import com.example.music_helper.data.model.UserSingleton
-import com.example.music_helper.domain.SaveUserUseCase
+import com.example.music_helper.common.api.model.UserSingleton
+import com.example.music_helper.feature.settings.api.data.datasource.SettingsDataSource
+import com.example.music_helper.feature.settings.api.domain.SaveUserUseCase
 import com.example.music_helper.ui.MainScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

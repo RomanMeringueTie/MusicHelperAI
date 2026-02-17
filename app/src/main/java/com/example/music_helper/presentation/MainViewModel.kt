@@ -2,8 +2,8 @@ package com.example.music_helper.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.music_helper.data.model.SettingsSingleton
-import com.example.music_helper.domain.GetPickedAppsUseCase
+import com.example.music_helper.common.api.model.SettingsSingleton
+import com.example.music_helper.feature.settings.api.domain.GetPickedAppsUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

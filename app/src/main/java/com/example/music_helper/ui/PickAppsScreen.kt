@@ -44,7 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.example.music_helper.R
-import com.example.music_helper.data.model.AppInfo
+import com.example.music_helper.feature.apps.api.AppInfo
 import com.example.music_helper.presentation.PickAppsViewModel
 import com.example.music_helper.presentation.State
 import com.example.music_helper.ui.utils.EnterAnimation

@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.music_helper"
-    compileSdk = 35
+    compileSdk = 36
     android.buildFeatures.buildConfig = true
 
     defaultConfig {
@@ -51,6 +51,24 @@ android {
 }
 
 dependencies {
+
+    // Feature modules
+    implementation(project(":common:common-api"))
+    implementation(project(":feature-auth:feature-auth-api"))
+    implementation(project(":feature-listens:feature-listens-api"))
+    implementation(project(":feature-apps:feature-apps-api"))
+    implementation(project(":feature-permission:feature-permission-api"))
+    implementation(project(":feature-analysis:feature-analysis-api"))
+    implementation(project(":feature-stats:feature-stats-api"))
+    implementation(project(":feature-settings:feature-settings-api"))
+    // TODO(Remove impl dependencies)
+    implementation(project(":feature-auth:feature-auth-impl"))
+    implementation(project(":feature-listens:feature-listens-impl"))
+    implementation(project(":feature-apps:feature-apps-impl"))
+    implementation(project(":feature-permission:feature-permission-impl"))
+    implementation(project(":feature-analysis:feature-analysis-impl"))
+    implementation(project(":feature-stats:feature-stats-impl"))
+    implementation(project(":feature-settings:feature-settings-impl"))
 
     // Firebase
     implementation(platform(libs.firebase.bom))

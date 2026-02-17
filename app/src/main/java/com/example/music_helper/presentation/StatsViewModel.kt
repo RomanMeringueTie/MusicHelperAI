@@ -2,10 +2,10 @@ package com.example.music_helper.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.music_helper.data.model.TopArtist
-import com.example.music_helper.data.model.TopTrack
-import com.example.music_helper.domain.GetTopArtistsUseCase
-import com.example.music_helper.domain.GetTopTracksUseCase
+import com.example.music_helper.feature.listens.api.model.TopArtist
+import com.example.music_helper.feature.listens.api.model.TopTrack
+import com.example.music_helper.feature.stats.api.domain.GetTopArtistsUseCase
+import com.example.music_helper.feature.stats.api.domain.GetTopTracksUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,7 +49,7 @@ class StatsViewModel(
         val result =
             getTopTracksUseCase()
         result.fold(
-            onSuccess = {
+            onSuccess = { it ->
                 _tracks.value = State.Content(it)
                 updateGlobalState()
             },

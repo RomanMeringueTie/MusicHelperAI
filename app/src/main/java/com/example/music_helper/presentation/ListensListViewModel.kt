@@ -2,14 +2,14 @@ package com.example.music_helper.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.music_helper.data.model.Day
-import com.example.music_helper.data.model.ListenFull
-import com.example.music_helper.data.model.TrackReview
-import com.example.music_helper.domain.DeleteListenUseCase
-import com.example.music_helper.domain.GetListensUseCase
-import com.example.music_helper.domain.GetTrackReviewUseCase
-import com.example.music_helper.domain.InsertListenUseCase
-import com.example.music_helper.ui.utils.groupListensByDay
+import com.example.music_helper.feature.listens.api.model.Day
+import com.example.music_helper.feature.listens.api.domain.DeleteListenUseCase
+import com.example.music_helper.feature.listens.api.domain.GetListensUseCase
+import com.example.music_helper.feature.listens.api.domain.InsertListenUseCase
+import com.example.music_helper.feature.analysis.api.domain.GetTrackReviewUseCase
+import com.example.music_helper.feature.analysis.api.model.TrackReview
+import com.example.music_helper.feature.listens.api.groupListensByDay
+import com.example.music_helper.feature.listens.api.model.ListenFull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
