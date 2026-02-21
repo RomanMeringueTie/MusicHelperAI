@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.android)
+    id("com.autonomousapps.dependency-analysis")
 }
 
 android {
@@ -25,4 +26,6 @@ dependencies {
     implementation(libs.kotlinx.collections.immutable)
     implementation(libs.kotlinx.datetime)
     implementation(libs.core.ktx)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 }

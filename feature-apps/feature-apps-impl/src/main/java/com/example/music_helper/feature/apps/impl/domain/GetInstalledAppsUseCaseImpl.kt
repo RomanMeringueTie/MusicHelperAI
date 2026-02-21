@@ -1,7 +1,7 @@
 package com.example.music_helper.feature.apps.impl.domain
 
-import com.example.music_helper.feature.apps.api.AppInfo
-import com.example.music_helper.feature.apps.api.GetInstalledAppsUseCase
+import com.example.music_helper.feature.apps.api.model.AppInfo
+import com.example.music_helper.feature.apps.api.domain.GetInstalledAppsUseCase
 import com.example.music_helper.feature.apps.impl.data.datasource.InstalledAppsDataSource
 
 class GetInstalledAppsUseCaseImpl(

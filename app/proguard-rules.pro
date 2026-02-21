@@ -21,4 +21,3 @@
 #-renamesourcefileattribute SourceFile
 
 -keep class * implements com.example.common.api.di.DIModuleProvider
--keep resource META-INF/services/*

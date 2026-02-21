@@ -1,11 +1,11 @@
 package com.example.music_helper.feature.listens.impl.data.datasource
 
-import com.example.music_helper.feature.listens.api.db.model.Artist
-import com.example.music_helper.feature.listens.api.db.dao.ArtistDao
-import com.example.music_helper.feature.listens.api.db.model.Listen
-import com.example.music_helper.feature.listens.api.db.dao.ListenDao
-import com.example.music_helper.feature.listens.api.db.model.Track
-import com.example.music_helper.feature.listens.api.db.dao.TrackDao
+import com.example.music_helper.feature.listens.api.data.db.model.Artist
+import com.example.music_helper.feature.listens.api.data.db.dao.ArtistDao
+import com.example.music_helper.feature.listens.api.data.db.model.Listen
+import com.example.music_helper.feature.listens.api.data.db.dao.ListenDao
+import com.example.music_helper.feature.listens.api.data.db.model.Track
+import com.example.music_helper.feature.listens.api.data.db.dao.TrackDao
 import com.example.music_helper.feature.listens.api.model.ListenFull
 import com.example.music_helper.feature.listens.api.model.TopArtist
 import com.example.music_helper.feature.listens.api.model.TopTrack

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="analysis">Анализ</string>
+    <string name="analyzing">Анализируем ваши музыкальные предпочтения…</string>
+    <string name="recomendations">Рекомендации</string>
+</resources>

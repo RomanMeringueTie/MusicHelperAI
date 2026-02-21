@@ -1,7 +1,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") version "2.1.21-2.0.1"
+    id("com.autonomousapps.dependency-analysis")
 }
 
 android {
@@ -21,9 +23,22 @@ kotlin {
 
 dependencies {
     implementation(project(":common:common-api"))
+//    implementation(project(":feature-analysis:feature-analysis-api"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.kotlinx.datetime)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.core.ktx)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.tooling.preview)
 }

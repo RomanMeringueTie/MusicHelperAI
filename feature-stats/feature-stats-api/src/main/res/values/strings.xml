@@ -1,0 +1,4 @@
+<resources>
+    <string name="stats">Статистика</string>
+    <string name="listens_count">Прослушивания: %1$s</string>
+</resources>

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") version "2.1.21-2.0.1"
     alias(libs.plugins.kotlin.android)
+    id("com.autonomousapps.dependency-analysis")
 }
 
 android {
@@ -16,6 +17,7 @@ android {
 dependencies {
     implementation(project(":common:common-api"))
     implementation(project(":feature-listens:feature-listens-api"))
+    implementation(project(":feature-analysis:feature-analysis-api"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

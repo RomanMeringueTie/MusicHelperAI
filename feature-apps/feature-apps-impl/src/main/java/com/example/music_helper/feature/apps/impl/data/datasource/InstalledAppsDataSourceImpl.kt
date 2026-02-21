@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import com.example.music_helper.feature.apps.api.AppInfo
+import com.example.music_helper.feature.apps.api.model.AppInfo
 
 class InstalledAppsDataSourceImpl(
     private val packageManager: PackageManager,

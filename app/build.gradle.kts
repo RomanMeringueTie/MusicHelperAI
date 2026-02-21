@@ -4,12 +4,12 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") version "2.1.21-2.0.1"
     id("com.google.gms.google-services")
+    id("com.autonomousapps.dependency-analysis")
 }
 
 android {
     namespace = "com.example.music_helper"
     compileSdk = 36
-    android.buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "com.example.maps"
@@ -20,13 +20,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         signingConfig = signingConfigs.getByName("debug")
-        buildConfigField("boolean", "IS_DEBUG", "false")
     }
 
     buildTypes {
-        debug {
-            buildConfigField("boolean", "IS_DEBUG", "true")
-        }
 
         release {
             isMinifyEnabled = true
@@ -35,7 +31,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("boolean", "IS_DEBUG", "false")
         }
     }
     compileOptions {
@@ -61,7 +56,9 @@ dependencies {
     implementation(project(":feature-analysis:feature-analysis-api"))
     implementation(project(":feature-stats:feature-stats-api"))
     implementation(project(":feature-settings:feature-settings-api"))
+    implementation(project(":feature-onboarding:feature-onboarding-api"))
     // TODO(Remove impl dependencies)
+    implementation(project(":common:common-impl"))
     implementation(project(":feature-auth:feature-auth-impl"))
     implementation(project(":feature-listens:feature-listens-impl"))
     implementation(project(":feature-apps:feature-apps-impl"))
@@ -69,6 +66,7 @@ dependencies {
     implementation(project(":feature-analysis:feature-analysis-impl"))
     implementation(project(":feature-stats:feature-stats-impl"))
     implementation(project(":feature-settings:feature-settings-impl"))
+    implementation(project(":feature-onboarding:feature-onboarding-impl"))
 
     // Firebase
     implementation(platform(libs.firebase.bom))

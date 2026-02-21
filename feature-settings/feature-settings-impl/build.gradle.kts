@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.android)
+    id("com.autonomousapps.dependency-analysis")
 }
 
 android {
@@ -16,6 +17,9 @@ dependencies {
     implementation(project(":common:common-api"))
     implementation(project(":feature-settings:feature-settings-api"))
     implementation(project(":feature-permission:feature-permission-api"))
+    implementation(project(":feature-apps:feature-apps-api"))
+    implementation(project(":feature-auth:feature-auth-api"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

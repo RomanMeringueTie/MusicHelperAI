@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cancel">Отмена</string>
+    <string name="give_permission">Выдать разрешение</string>
+    <string name="to_notifications">На доступ к уведомлениям</string>
+    <string name="to_settings">В настройки</string>
+</resources>

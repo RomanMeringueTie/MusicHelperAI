@@ -12,8 +12,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.music_helper.common.api.model.SettingsSingleton
 import com.example.music_helper.common.api.theme.MapsTheme
 import com.example.music_helper.presentation.MainViewModel
-import com.example.music_helper.ui.utils.EnterAnimation
+import com.example.music_helper.common.api.ui.utils.EnterAnimation
 import org.koin.androidx.compose.koinViewModel
+import com.example.music_helper.feature.analysis.api.ui.AnalysisScreen
+import com.example.music_helper.feature.apps.api.ui.PickAppsScreen
+import com.example.music_helper.feature.auth.api.ui.LoginScreen
+import com.example.music_helper.feature.listens.api.ui.ListensListScreen
+import com.example.music_helper.feature.onboarding.api.ui.OnboardingScreen
+import com.example.music_helper.feature.settings.api.ui.SettingsScreen
+import com.example.music_helper.feature.stats.api.ui.StatsScreen
 
 @SuppressLint("ViewModelConstructorInComposable")
 @Composable
@@ -34,7 +41,7 @@ fun MainScreen(modifier: Modifier, viewModel: MainViewModel) {
             NavHost(navController = navController, startDestination = startDestination) {
                 composable("FIRST") {
                     EnterAnimation {
-                        FirstTimeRunScreen(
+                        OnboardingScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(innerPadding),

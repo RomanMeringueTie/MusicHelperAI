@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile">Профиль</string>
+    <string name="unknown_name">Гость</string>
+    <string name="user">Пользователь</string>
+    <string name="sign_in">Войти</string>
+    <string name="app">Приложение</string>
+    <string name="change_theme">Сменить тему</string>
+    <string name="apps_not_picked">Приложения не выбраны</string>
+    <string name="now_picked_apps">Сейчас выбраны: %1$s</string>
+</resources>

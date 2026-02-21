@@ -15,6 +15,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
+import com.example.music_helper.common.api.config.BuildType
+import com.example.music_helper.common.api.config.BuildTypeProvider
 import com.example.music_helper.common.api.model.SettingsSingleton
 import com.example.music_helper.common.api.model.UserSingleton
 import com.example.music_helper.common.api.toggles.ListensFilterToggle
@@ -36,6 +38,7 @@ class MusicNotificationService : NotificationListenerService() {
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.Main + job)
     private val mutex = Mutex()
+    private val buildType: BuildTypeProvider = get()
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         scope.launch {
@@ -43,7 +46,7 @@ class MusicNotificationService : NotificationListenerService() {
                 val extras = sbn.notification.extras
                 val sharedPreferences = getSharedPreferences("PREFS", MODE_PRIVATE)
 
-                if (BuildConfig.DEBUG && !ListensFilterToggle.isEnabled()) {
+                if (buildType.getBuildType() == BuildType.DEBUG && !ListensFilterToggle.isEnabled()) {
                     insertNotification(extras, sharedPreferences)
                 } else {
                     insertFilteredNotification(extras, sharedPreferences, sbn.packageName)

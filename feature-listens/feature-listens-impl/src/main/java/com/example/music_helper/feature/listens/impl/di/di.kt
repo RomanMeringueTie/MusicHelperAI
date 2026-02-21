@@ -1,7 +1,7 @@
 package com.example.music_helper.feature.listens.impl.di
 
 import androidx.room.Room
-import com.example.music_helper.feature.listens.api.db.AppDatabase
+import com.example.music_helper.feature.listens.api.data.db.AppDatabase
 import com.example.music_helper.feature.listens.api.domain.DeleteListenUseCase
 import com.example.music_helper.feature.listens.api.domain.GetListensUseCase
 import com.example.music_helper.feature.listens.api.domain.InsertListenUseCase
@@ -10,13 +10,21 @@ import com.example.music_helper.feature.listens.impl.data.datasource.ListensLoca
 import com.example.music_helper.feature.listens.impl.data.datasource.ListensRemoteDataSource
 import com.example.music_helper.feature.listens.impl.data.datasource.ListensRemoteDataSourceImpl
 import com.example.music_helper.feature.listens.api.data.repository.ListensRepository
+import com.example.music_helper.feature.listens.api.domain.GetListensReviewUseCase
+import com.example.music_helper.feature.listens.api.domain.GetTrackReviewUseCase
+import com.example.music_helper.feature.listens.api.presentation.ListensListViewModel
 import com.example.music_helper.feature.listens.impl.data.repository.ListensRepositoryImpl
 import com.example.music_helper.feature.listens.impl.domain.DeleteListenUseCaseImpl
+import com.example.music_helper.feature.listens.impl.domain.GetListensReviewUseCaseImpl
 import com.example.music_helper.feature.listens.impl.domain.GetListensUseCaseImpl
+import com.example.music_helper.feature.listens.impl.domain.GetTrackReviewUseCaseImpl
 import com.example.music_helper.feature.listens.impl.domain.InsertListenUseCaseImpl
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.bind
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val listenFeatureModule = module {
@@ -33,10 +41,18 @@ val listenFeatureModule = module {
     single { get<AppDatabase>().ArtistDao() }
     single { get<AppDatabase>().TrackDao() }
 
+    single {
+        Firebase.firestore
+    }
+
+    singleOf(::GetTrackReviewUseCaseImpl) { bind<GetTrackReviewUseCase>() }
+    singleOf(::GetListensReviewUseCaseImpl) { bind<GetListensReviewUseCase>() }
     singleOf(::ListensLocalDataSourceImpl) { bind<ListensLocalDataSource>() }
     singleOf(::ListensRemoteDataSourceImpl) { bind<ListensRemoteDataSource>() }
     singleOf(::ListensRepositoryImpl) { bind<ListensRepository>() }
     singleOf(::GetListensUseCaseImpl) { bind<GetListensUseCase>() }
     singleOf(::InsertListenUseCaseImpl) { bind<InsertListenUseCase>() }
     singleOf(::DeleteListenUseCaseImpl) { bind<DeleteListenUseCase>() }
+
+    viewModelOf(::ListensListViewModel)
 }
