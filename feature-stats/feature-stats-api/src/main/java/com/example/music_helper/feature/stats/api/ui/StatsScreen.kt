@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import com.example.music_helper.feature.listens.api.model.TopArtist
 import com.example.music_helper.feature.listens.api.model.TopTrack
 import com.example.music_helper.common.api.presentation.State
+import com.example.music_helper.common.api.R as CommonR
 import com.example.music_helper.feature.stats.api.R
 import com.example.music_helper.feature.stats.api.presentation.StatsViewModel
 
@@ -77,12 +78,12 @@ private fun StatsScreenImpl(
                     TopAppBar(
                         title = { Text(stringResource(R.string.stats)) },
                         navigationIcon = {
-                            IconButton(onClick = onBack) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Navigate Back"
-                                )
-                            }
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(CommonR.string.navigate_back)
+                            )
+                        }
                         }
                     )
                 }
@@ -148,7 +149,7 @@ private fun StatsScreenImpl(
                     ) {
                         item {
                             StatsSection(
-                                title = "Топ артистов",
+                                title = stringResource(CommonR.string.top_artists),
                                 icon = Icons.Default.Person
                             ) {
                                 val artists = state.data.first
@@ -172,7 +173,7 @@ private fun StatsScreenImpl(
 
                         item {
                             StatsSection(
-                                title = "Топ треков",
+                                title = stringResource(CommonR.string.top_tracks),
                                 icon = Icons.Default.PlayArrow
                             ) {
                                 val tracks = state.data.second

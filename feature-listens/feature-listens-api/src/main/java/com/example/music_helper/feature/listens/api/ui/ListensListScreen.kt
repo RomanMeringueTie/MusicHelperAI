@@ -79,6 +79,7 @@ import androidx.compose.ui.unit.sp
 import com.example.music_helper.common.api.presentation.State
 import com.example.music_helper.common.api.ui.utils.getDayTimeFromEpochTime
 import com.example.music_helper.feature.listens.api.model.TrackReview
+import com.example.music_helper.common.api.R as CommonR
 import com.example.music_helper.feature.listens.api.R
 import com.example.music_helper.feature.listens.api.model.Day
 import com.example.music_helper.feature.listens.api.model.ListenFull
@@ -151,13 +152,13 @@ fun ListensListScreenImpl(
                         IconButton(onClick = onRefresh) {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
-                                contentDescription = "Refresh"
+                                contentDescription = stringResource(CommonR.string.refresh)
                             )
                         }
                         IconButton(onClick = onRouteToSettings) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
-                                contentDescription = "Settings"
+                                contentDescription = stringResource(CommonR.string.settings)
                             )
                         }
                     }
@@ -198,7 +199,7 @@ fun ListensListScreenImpl(
                                 hoveredElevation = 2.dp
                             )
                         ) {
-                            Icon(Icons.Filled.Add, "Add listen")
+                            Icon(Icons.Filled.Add, stringResource(CommonR.string.add_listen))
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -271,7 +272,7 @@ fun ListensListScreenImpl(
                                 )
                                 Spacer(modifier = Modifier.height(16.dp))
                                 TextButton(onClick = { onDismissError() }) {
-                                    Text("OK")
+                                    Text(stringResource(CommonR.string.ok))
                                 }
                             }
                         }
@@ -505,7 +506,7 @@ private fun DayItem(
 
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = if (isExpanded) "Collapse" else "Expand",
+                    contentDescription = if (isExpanded) stringResource(CommonR.string.collapse) else stringResource(CommonR.string.expand),
 
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -606,7 +607,7 @@ private fun ListenItem(
         IconButton(onClick = onTrackAnalyze) {
             Icon(
                 imageVector = Icons.Default.Info,
-                contentDescription = "Analyze Track",
+                contentDescription = stringResource(CommonR.string.analyze_track),
                 tint = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.size(if (isInDayView) 18.dp else 24.dp)
             )
@@ -615,7 +616,7 @@ private fun ListenItem(
         IconButton(onClick = onDelete) {
             Icon(
                 imageVector = Icons.Default.Delete,
-                contentDescription = "Delete",
+                contentDescription = stringResource(CommonR.string.delete),
                 tint = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.size(if (isInDayView) 18.dp else 24.dp)
             )
@@ -631,12 +632,12 @@ private fun DeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         text = { Text(stringResource(R.string.delete_listen_confirm_body)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.delete))
+                Text(stringResource(CommonR.string.delete))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(CommonR.string.cancel))
             }
         }
     )
@@ -652,7 +653,7 @@ private fun InsertTrackDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.add_listen)) },
+        title = { Text(stringResource(CommonR.string.add_listen)) },
         text = {
             Column {
                 OutlinedTextField(
@@ -682,7 +683,7 @@ private fun InsertTrackDialog(
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(CommonR.string.cancel))
             }
         }
     )
@@ -702,14 +703,14 @@ fun TrackAnalysisDialog(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.note_icon),
-                    contentDescription = "Note Icon",
+                    contentDescription = stringResource(CommonR.string.note_icon),
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = when (trackReview) {
-                        is State.Content -> "Анализ: ${trackReview.data.artist} - ${trackReview.data.title}"
-                        else -> "Анализ трека"
+                        is State.Content -> stringResource(R.string.analysis_track_title, trackReview.data.artist, trackReview.data.title)
+                        else -> stringResource(R.string.analysis_track_default)
                     },
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 2,
@@ -732,7 +733,7 @@ fun TrackAnalysisDialog(
                     )
                 ) {
                     Text(
-                        text = "Закрыть",
+                        text = stringResource(CommonR.string.close),
                         style = MaterialTheme.typography.labelLarge
                     )
                 }
@@ -783,7 +784,7 @@ private fun LoadingContent() {
             strokeCap = StrokeCap.Round
         )
         Text(
-            text = "Анализируем трек...",
+            text = stringResource(R.string.analyzing_track),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -813,7 +814,7 @@ private fun ErrorContent(
                 modifier = Modifier.size(32.dp)
             )
             Text(
-                text = "Ошибка анализа",
+                text = stringResource(R.string.analysis_error),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onErrorContainer,
                 textAlign = TextAlign.Center
@@ -837,7 +838,7 @@ private fun ErrorContent(
                 )
             ) {
                 Text(
-                    text = "Понятно",
+                    text = stringResource(CommonR.string.got_it),
                     style = MaterialTheme.typography.labelLarge
                 )
             }

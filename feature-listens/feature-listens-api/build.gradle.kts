@@ -9,6 +9,9 @@ plugins {
 android {
     namespace = "com.example.music_helper.feature.listens.api"
     compileSdk = 36
+    defaultConfig {
+        minSdk = 21
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -22,23 +25,28 @@ kotlin {
 }
 
 dependencies {
-    implementation(project(":common:common-api"))
-//    implementation(project(":feature-analysis:feature-analysis-api"))
+    api(project(":common:common-api"))
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.kotlinx.datetime)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+
     implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.core.ktx)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.foundation)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.animation.core)
+    implementation(libs.androidx.animation)
+    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.material.icons.core)
+    implementation(libs.androidx.compose.runtime.saveable)
+    implementation(libs.androidx.ui.text)
+    implementation(libs.androidx.ui.unit)
+
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.sqlite)
+
+    api(libs.kotlinx.coroutines.core)
+    api(libs.androidx.lifecycle.viewmodel)
 }

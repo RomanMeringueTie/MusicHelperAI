@@ -62,6 +62,7 @@ import com.example.music_helper.common.api.toggles.TogglesHolder
 import com.example.music_helper.feature.apps.api.model.AppInfo
 import com.example.music_helper.feature.auth.api.ui.signOut
 import com.example.music_helper.feature.permission.api.ui.AskPermissionDialog
+import com.example.music_helper.common.api.R as CommonR
 import com.example.music_helper.feature.settings.api.R
 import com.example.music_helper.feature.settings.api.presentation.DebugPanelViewModel
 import com.example.music_helper.feature.settings.api.presentation.SettingsViewModel
@@ -139,7 +140,7 @@ fun SettingsScreenImpl(
                         IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Navigate Back"
+                                contentDescription = stringResource(CommonR.string.navigate_back)
                             )
                         }
                     }
@@ -168,7 +169,7 @@ fun SettingsScreenImpl(
                         AsyncImage(
                             model = UserSingleton.picture
                                 ?: "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
-                            contentDescription = "Profile Image",
+                            contentDescription = stringResource(CommonR.string.profile_image),
                             modifier = Modifier
                                 .size(48.dp)
                                 .clip(CircleShape),
@@ -221,8 +222,8 @@ fun SettingsScreenImpl(
                     icon = Icons.Default.Settings
                 ) {
                     SettingsItem(
-                        title = stringResource(R.string.change_theme),
-                        subtitle = if (isDarkTheme) "Тёмная" else "Светлая",
+                        title = stringResource(CommonR.string.change_theme),
+                        subtitle = if (isDarkTheme) stringResource(CommonR.string.dark_theme) else stringResource(CommonR.string.light_theme),
                         icon = ImageVector.vectorResource(R.drawable.theme_icon),
                         onClick = onThemeChange
                     )
@@ -235,7 +236,7 @@ fun SettingsScreenImpl(
                     when (pickedApps) {
                         is State.Content -> {
                             SettingsItem(
-                                title = "Выбрать приложения",
+                                title = stringResource(CommonR.string.pick_apps_title),
                                 subtitle = getAppsSubtitle(pickedApps.data),
                                 icon = Icons.AutoMirrored.Filled.List,
                                 onClick = onRouteToPickApps
@@ -244,7 +245,7 @@ fun SettingsScreenImpl(
 
                         else -> {
                             SettingsItem(
-                                title = "Выбрать приложения",
+                                title = stringResource(CommonR.string.pick_apps_title),
                                 subtitle = "",
                                 icon = Icons.AutoMirrored.Filled.List,
                                 onClick = onRouteToPickApps
@@ -258,8 +259,12 @@ fun SettingsScreenImpl(
                     )
 
                     SettingsItem(
-                        title = "Разрешение",
-                        subtitle = "На получение данных из уведомлений: ${if (isPermissionGiven) "Выдано" else "Не выдано"}",
+                        title = stringResource(CommonR.string.permission_title),
+                        subtitle = stringResource(
+                            CommonR.string.permission_notification_description,
+                            if (isPermissionGiven) stringResource(CommonR.string.permission_notification_granted)
+                            else stringResource(CommonR.string.permission_notification_not_granted)
+                        ),
                         icon = Icons.AutoMirrored.Filled.Send,
                         onClick = onChangePermissionDialogVisibility
                     )
@@ -270,8 +275,8 @@ fun SettingsScreenImpl(
                     )
 
                     SettingsItemWithSwitch(
-                        title = "Уведомления",
-                        subtitle = "Хотите получать уведомления?",
+                        title = stringResource(CommonR.string.notifications_title),
+                        subtitle = stringResource(CommonR.string.notifications_ask),
                         icon = Icons.Default.Notifications,
                         onClick = onNotificationSettingChange,
                         isChecked = isNotificationsAllowed
@@ -386,7 +391,7 @@ private fun SettingsItem(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = "Setting Item Icon",
+                contentDescription = stringResource(CommonR.string.setting_item_icon),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(16.dp)
             )
@@ -414,7 +419,7 @@ private fun SettingsItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Сейчас выбраны: ",
+                        text = stringResource(CommonR.string.currently_selected),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
@@ -452,7 +457,7 @@ private fun SettingsItemWithSwitch(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = "Setting Item Icon",
+                contentDescription = stringResource(CommonR.string.setting_item_icon),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(16.dp)
             )
@@ -495,8 +500,8 @@ private fun getAppsSubtitle(apps: List<AppInfo>): String {
 private fun SignOutDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Выйти из аккаунта") },
-        text = { Text("Вы уверены?") },
+        title = { Text(stringResource(CommonR.string.sign_out_title)) },
+        text = { Text(stringResource(CommonR.string.sign_out_confirm)) },
         confirmButton = {
             TextButton(onClick = onConfirm) {
                 Text(stringResource(R.string.sign_out))
@@ -504,7 +509,7 @@ private fun SignOutDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
+                Text(stringResource(CommonR.string.cancel))
             }
         }
     )

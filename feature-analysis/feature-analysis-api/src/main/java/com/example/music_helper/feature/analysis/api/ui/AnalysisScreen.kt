@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.music_helper.common.api.presentation.State
 import com.example.music_helper.common.api.ui.utils.TypeWritingText
+import com.example.music_helper.common.api.R as CommonR
 import com.example.music_helper.feature.analysis.api.R
 import com.example.music_helper.feature.listens.api.model.ListensReview
 import com.example.music_helper.feature.analysis.api.presentation.AnalysisViewModel
@@ -75,10 +76,10 @@ fun AnalysisScreenImpl(
                 TopAppBar(
                     title = { Text(text = stringResource(R.string.analysis)) },
                     navigationIcon = {
-                        IconButton(onClick = onBack) {
+                    IconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Navigate Back"
+                                contentDescription = stringResource(CommonR.string.navigate_back)
                             )
                         }
                     }
@@ -165,7 +166,7 @@ fun AnalysisScreenImpl(
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             TextButton(onClick = onDismissError) {
-                                Text("OK")
+                                Text(stringResource(CommonR.string.ok))
                             }
                         }
                     }

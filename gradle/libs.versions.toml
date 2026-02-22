@@ -6,7 +6,6 @@ coilCompose = "3.2.0"
 firebaseBom = "33.16.0"
 firebaseUiAuth = "9.0.0"
 foundation = "1.8.3"
-genaiSummarization = "1.0.0-beta1"
 koinAndroid = "4.0.4"
 kotlin = "2.1.21"
 coreKtx = "1.16.0"
@@ -18,7 +17,16 @@ kotlinxCoroutinesCore = "1.8.0"
 kotlinxCoroutinesTest = "1.7.3"
 kotlinxDatetime = "0.6.2"
 lifecycleRuntimeKtx = "2.9.0"
+lifecycleViewmodel = "2.9.0"
+roomCommon = "2.7.1"
+sqlite = "2.5.0"
 activityCompose = "1.10.1"
+koinCore = "4.0.4"
+koinCoreViewmodel = "4.0.4"
+kotlinxCoroutinesPlayServices = "1.8.1"
+composeFoundationLayout = "1.8.3"
+composeMaterialIconsCore = "1.7.0"
+composeRuntimeSaveable = "1.8.3"
 composeBom = "2024.09.00"
 mockk = "1.13.8"
 navigationCompose = "2.9.0"
@@ -47,12 +55,20 @@ firebase-ai = { module = "com.google.firebase:firebase-ai" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
 firebase-ui-auth = { module = "com.firebaseui:firebase-ui-auth", version.ref = "firebaseUiAuth" }
-genai-summarization = { module = "com.google.mlkit:genai-summarization", version.ref = "genaiSummarization" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycleViewmodel" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
+androidx-sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "sqlite" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
+koin-core-viewmodel = { module = "io.insert-koin:koin-core-viewmodel", version.ref = "koinCoreViewmodel" }
+kotlinx-coroutines-play-services = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutinesPlayServices" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "composeFoundationLayout" }
+androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core", version.ref = "composeMaterialIconsCore" }
+androidx-compose-runtime-saveable = { group = "androidx.compose.runtime", name = "runtime-saveable", version.ref = "composeRuntimeSaveable" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -64,12 +80,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
 
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
-koin-android-compat = { module = "io.insert-koin:koin-android-compat", version.ref = "koinAndroid" }
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinAndroid" }
-koin-androidx-compose-navigation = { module = "io.insert-koin:koin-androidx-compose-navigation", version.ref = "koinAndroid" }
-koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation", version.ref = "koinAndroid" }
-koin-androidx-startup = { module = "io.insert-koin:koin-androidx-startup", version.ref = "koinAndroid" }
-koin-androidx-workmanager = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koinAndroid" }
 koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinAndroid" }
 koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4", version.ref = "koinAndroid" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
@@ -84,5 +95,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.0.21" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlin-library = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }

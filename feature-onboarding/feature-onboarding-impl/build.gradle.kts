@@ -8,6 +8,9 @@ plugins {
 android {
     namespace = "com.example.music_helper.feature.onboarding.impl"
     compileSdk = 36
+    defaultConfig {
+        minSdk = 21
+    }
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -18,16 +21,20 @@ dependencies {
     implementation(project(":feature-onboarding:feature-onboarding-api"))
     implementation(project(":feature-apps:feature-apps-api"))
     implementation(project(":feature-apps:feature-apps-impl"))
+
     implementation(libs.androidx.core.ktx)
+    implementation(libs.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.tooling.preview)
+
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.activity.compose)
+
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
-    implementation(libs.core.ktx)
 }

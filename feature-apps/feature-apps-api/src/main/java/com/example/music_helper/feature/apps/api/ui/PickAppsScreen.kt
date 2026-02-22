@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import com.example.music_helper.common.api.presentation.State
+import com.example.music_helper.common.api.R as CommonR
 import com.example.music_helper.feature.apps.api.R
 import com.example.music_helper.feature.apps.api.model.AppInfo
 import com.example.music_helper.feature.apps.api.presentation.PickAppsViewModel
@@ -94,7 +95,7 @@ fun PickAppsScreenImpl(
                         leadingIcon = {
                             Icon(
                                 Icons.Default.Search,
-                                contentDescription = "Search Icon"
+                                contentDescription = stringResource(CommonR.string.search_icon)
                             )
                         },
                         shape = RoundedCornerShape(20.dp)
@@ -151,7 +152,7 @@ fun PickAppsScreenImpl(
                         text = { Text(state.message) },
                         confirmButton = {
                             TextButton(onClick = {}) {
-                                Text("OK")
+                                Text(stringResource(CommonR.string.ok))
                             }
                         }
                     )

@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.example.music_helper.common.api.R as CommonR
 import com.example.music_helper.feature.onboarding.api.R
 import com.example.music_helper.common.api.model.SettingsSingleton
 import com.example.music_helper.common.api.model.UserSingleton
@@ -104,8 +105,8 @@ private fun FirstTimeRunScreenImpl(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "Здравствуйте!", style = MaterialTheme.typography.headlineLarge)
-        Text("Настройте приложение как Вам удобно", style = MaterialTheme.typography.bodyLarge)
+        Text(text = stringResource(CommonR.string.greeting_hello), style = MaterialTheme.typography.headlineLarge)
+        Text(stringResource(CommonR.string.configure_app), style = MaterialTheme.typography.bodyLarge)
 
         SettingsSection(
             title = stringResource(R.string.profile),
@@ -118,7 +119,7 @@ private fun FirstTimeRunScreenImpl(
                 AsyncImage(
                     model = UserSingleton.picture
                         ?: "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
-                    contentDescription = "Profile Image",
+                    contentDescription = stringResource(CommonR.string.profile_image),
                     modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape),
@@ -159,8 +160,8 @@ private fun FirstTimeRunScreenImpl(
             icon = Icons.Default.Settings
         ) {
             SettingsItem(
-                title = stringResource(R.string.change_theme),
-                subtitle = if (isDarkTheme) "Тёмная" else "Светлая",
+                title = stringResource(CommonR.string.change_theme),
+                subtitle = if (isDarkTheme) stringResource(CommonR.string.dark_theme) else stringResource(CommonR.string.light_theme),
                 icon = ImageVector.vectorResource(R.drawable.theme_icon),
                 onClick = onThemeChange
             )
@@ -173,7 +174,7 @@ private fun FirstTimeRunScreenImpl(
             when (pickedApps) {
                 is State.Content -> {
                     SettingsItem(
-                        title = "Выбрать приложения",
+                        title = stringResource(CommonR.string.pick_apps_title),
                         subtitle = getAppsSubtitle(pickedApps.data),
                         icon = Icons.AutoMirrored.Filled.List,
                         onClick = onRouteToPickApps
@@ -182,7 +183,7 @@ private fun FirstTimeRunScreenImpl(
 
                 else -> {
                     SettingsItem(
-                        title = "Выбрать приложения",
+                        title = stringResource(CommonR.string.pick_apps_title),
                         subtitle = "",
                         icon = Icons.AutoMirrored.Filled.List,
                         onClick = onRouteToPickApps
@@ -196,8 +197,12 @@ private fun FirstTimeRunScreenImpl(
             )
 
             SettingsItem(
-                title = "Разрешение",
-                subtitle = "На получение данных из уведомлений: ${if (isPermissionGiven) "Выдано" else "Не выдано"}",
+                title = stringResource(CommonR.string.permission_title),
+                subtitle = stringResource(
+                    CommonR.string.permission_notification_description,
+                    if (isPermissionGiven) stringResource(CommonR.string.permission_notification_granted)
+                    else stringResource(CommonR.string.permission_notification_not_granted)
+                ),
                 icon = Icons.AutoMirrored.Filled.Send,
                 onClick = onChangePermissionDialogVisibility
             )
@@ -208,8 +213,8 @@ private fun FirstTimeRunScreenImpl(
             )
 
             SettingsItemWithSwitch(
-                title = "Уведомления",
-                subtitle = "Хотите получать уведомления?",
+                title = stringResource(CommonR.string.notifications_title),
+                subtitle = stringResource(CommonR.string.notifications_ask),
                 icon = Icons.Default.Notifications,
                 onClick = onNotificationSettingChange,
                 isChecked = isNotificationsAllowed
@@ -218,7 +223,7 @@ private fun FirstTimeRunScreenImpl(
         ElevatedButton(
             onClick = onRouteToNext,
         ) {
-            Text(text = "Поехали!", modifier = Modifier.padding(8.dp))
+            Text(text = stringResource(CommonR.string.lets_go), modifier = Modifier.padding(8.dp))
         }
     }
 
@@ -248,12 +253,12 @@ private fun SettingsSection(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
+            Icon(
+                imageVector = icon,
+                contentDescription = stringResource(CommonR.string.setting_item_icon),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp)
+            )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = title,
@@ -319,7 +324,7 @@ private fun SettingsItem(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Сейчас выбраны: ",
+                        text = stringResource(CommonR.string.currently_selected),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 2,
@@ -357,7 +362,7 @@ private fun SettingsItemWithSwitch(
         ) {
             Icon(
                 imageVector = icon,
-                contentDescription = "Setting Item Icon",
+                contentDescription = stringResource(CommonR.string.setting_item_icon),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(16.dp)
             )

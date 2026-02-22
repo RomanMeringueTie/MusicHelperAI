@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ok">OK</string>
+    <string name="cancel">Отмена</string>
+    <string name="error">Ошибка</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="something_went_wrong">Что-то пошло не так…</string>
+    <string name="refresh">Обновить</string>
+    <string name="settings">Настройки</string>
+    <string name="add_listen">Добавить трек</string>
+    <string name="delete">Удалить</string>
+    <string name="analyze_track">Анализ трека</string>
+    <string name="collapse">Свернуть</string>
+    <string name="expand">Развернуть</string>
+    <string name="close">Закрыть</string>
+    <string name="got_it">Понятно</string>
+    <string name="analyzing_track">Анализируем трек…</string>
+    <string name="analysis_error">Ошибка анализа</string>
+    <string name="analysis_track_title">Анализ: %1$s - %2$s</string>
+    <string name="analysis_track_default">Анализ трека</string>
+    <string name="navigate_back">Назад</string>
+    <string name="search_icon">Поиск</string>
+    <string name="note_icon">Нота</string>
+    <string name="setting_item_icon">Иконка настройки</string>
+    <string name="profile_image">Фото профиля</string>
+    <string name="dark_theme">Тёмная</string>
+    <string name="light_theme">Светлая</string>
+    <string name="pick_apps_title">Выбрать приложения</string>
+    <string name="permission_title">Разрешение</string>
+    <string name="permission_notification_granted">Выдано</string>
+    <string name="permission_notification_not_granted">Не выдано</string>
+    <string name="permission_notification_description">На получение данных из уведомлений: %1$s</string>
+    <string name="notifications_title">Уведомления</string>
+    <string name="notifications_ask">Хотите получать уведомления?</string>
+    <string name="lets_go">Поехали!</string>
+    <string name="currently_selected">Сейчас выбраны:</string>
+    <string name="top_artists">Топ артистов</string>
+    <string name="top_tracks">Топ треков</string>
+    <string name="sign_out_title">Выйти из аккаунта</string>
+    <string name="sign_out_confirm">Вы уверены?</string>
+    <string name="greeting_hello">Здравствуйте!</string>
+    <string name="configure_app">Настройте приложение как Вам удобно</string>
+    <string name="change_theme">Сменить тему</string>
+</resources>
