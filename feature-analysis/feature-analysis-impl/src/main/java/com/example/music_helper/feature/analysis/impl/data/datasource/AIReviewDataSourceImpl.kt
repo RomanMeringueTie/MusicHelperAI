@@ -16,11 +16,11 @@ class AIReviewDataSourceImpl : AIReviewDataSource {
         return response
     }
 
-    // TODO (Optimize regexp (string object allocations))
     private fun String.normalize(): String {
-        return this.replace("*", "")
-            .replace(Regex(MARKDOWN_SYMBOL_PATTERN), "")
-            .replace(Regex(WHITESPACE_PATTERN), " ")
+        val normalizeRegex = Regex("[*$MARKDOWN_SYMBOL_PATTERN]|$WHITESPACE_PATTERN")
+        return replace(normalizeRegex) { matchResult ->
+            if (matchResult.value.matches(Regex(WHITESPACE_PATTERN))) " " else ""
+        }
     }
 
     private companion object {
