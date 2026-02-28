@@ -14,11 +14,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Set up Gradle cache
         uses: gradle/gradle-build-action@v2
@@ -46,18 +49,38 @@ jobs:
       - name: Build Release APK
         run: ./gradlew assembleRelease
 
-      - name: Sign Release APK
-        uses: r0adkll/sign-android-release@v1
-        id: sign_apk
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
-          alias: ${{ secrets.KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.SIGNING_KEY_BASE64 }}" | base64 --decode > keystore.jks
 
-      - name: Rename signed APK
-        run: cp ${{ steps.sign_apk.outputs.signedReleaseFile }} app/app-release.apk
+      - name: Find latest build-tools version
+        id: find_build_tools
+        run: |
+          LATEST_BUILD_TOOLS=$(ls -1 $ANDROID_HOME/build-tools | sort -V | tail -n 1)
+          echo "Latest build-tools version: $LATEST_BUILD_TOOLS"
+          echo "build_tools_version=$LATEST_BUILD_TOOLS" >> $GITHUB_OUTPUT
+
+      - name: Sign APK with apksigner
+        run: |
+          BUILD_TOOLS_VERSION="${{ steps.find_build_tools.outputs.build_tools_version }}"
+          echo "Using build-tools version: $BUILD_TOOLS_VERSION"
+          
+          # Find the unsigned APK (usually app-release-unsigned.apk)
+          UNSIGNED_APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          echo "Found unsigned APK: $UNSIGNED_APK"
+          
+          # Sign the APK
+          $ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION/apksigner sign \
+            --ks keystore.jks \
+            --ks-key-alias ${{ secrets.KEY_ALIAS }} \
+            --ks-pass pass:${{ secrets.KEY_STORE_PASSWORD }} \
+            --key-pass pass:${{ secrets.KEY_PASSWORD }} \
+            --out app/app-release.apk \
+            "$UNSIGNED_APK"
+          
+          # Verify the signature
+          $ANDROID_HOME/build-tools/$BUILD_TOOLS_VERSION/apksigner verify app/app-release.apk
+          echo "APK signed successfully!"
 
       - name: Upload Release APK to repository
         uses: actions/upload-artifact@v4
