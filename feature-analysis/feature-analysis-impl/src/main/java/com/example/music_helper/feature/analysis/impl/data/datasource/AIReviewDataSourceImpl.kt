@@ -24,7 +24,7 @@ class AIReviewDataSourceImpl : AIReviewDataSource {
     }
 
     private companion object {
-        const val GENERATIVE_MODEL = "gemini-2.0-flash"
+        const val GENERATIVE_MODEL = "gemini-3-flash-preview"
 
         const val MARKDOWN_SYMBOL_PATTERN = "(?<=[\\n\\t]) +"
         const val WHITESPACE_PATTERN = " +"

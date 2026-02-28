@@ -45,3 +45,26 @@ jobs:
 
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+
+      - name: Sign Release APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_apk
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+
+      - name: Rename signed APK
+        run: cp ${{ steps.sign_apk.outputs.signedReleaseFile }} app/app-release.apk
+
+      - name: Upload Release APK to repository
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: app/app-release.apk
+          retention-days: 30
