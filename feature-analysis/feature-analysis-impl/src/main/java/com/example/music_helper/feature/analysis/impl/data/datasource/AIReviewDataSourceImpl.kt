@@ -1,19 +1,28 @@
 package com.example.music_helper.feature.analysis.impl.data.datasource
 
+import android.util.Log
+import com.example.music_helper.common.api.model.RemoteConfig
 import com.example.music_helper.feature.analysis.api.data.datasource.AIReviewDataSource
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.GenerativeBackend
 
-class AIReviewDataSourceImpl : AIReviewDataSource {
+class AIReviewDataSourceImpl(private val remoteConfig: RemoteConfig) : AIReviewDataSource {
+
     override suspend fun get(prompt: String): String {
-        val model = Firebase.ai(backend = GenerativeBackend.googleAI())
-            .generativeModel(GENERATIVE_MODEL)
-
-        val response =
-            model.generateContent(prompt).text?.normalize() ?: DEFAULT_REVIEW
-
-        return response
+        try {
+            Log.d("AIReviewDataSource", "HELLO")
+            val model = Firebase.ai(backend = GenerativeBackend.googleAI())
+                .generativeModel(remoteConfig.geAiModel())
+            val response =
+                model.generateContent(prompt).text?.normalize() ?: DEFAULT_REVIEW
+            Log.d("AIReviewDataSource", response)
+            return response
+        }
+        catch (e: Exception) {
+            Log.e("AI MODEL GETTING ERROR", "error: ${e.message}")
+            return DEFAULT_REVIEW
+        }
     }
 
     private fun String.normalize(): String {
@@ -24,8 +33,6 @@ class AIReviewDataSourceImpl : AIReviewDataSource {
     }
 
     private companion object {
-        const val GENERATIVE_MODEL = "gemini-3-flash-preview"
-
         const val MARKDOWN_SYMBOL_PATTERN = "(?<=[\\n\\t]) +"
         const val WHITESPACE_PATTERN = " +"
         const val DEFAULT_REVIEW = "-"

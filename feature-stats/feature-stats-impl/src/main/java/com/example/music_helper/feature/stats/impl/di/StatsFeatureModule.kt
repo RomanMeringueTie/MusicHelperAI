@@ -10,7 +10,6 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
-// TODO(RenameFile)
 val statsFeatureModule = module {
     singleOf(::GetTopArtistsUseCaseImpl) { bind<GetTopArtistsUseCase>() }
     singleOf(::GetTopTracksUseCaseImpl) { bind<GetTopTracksUseCase>() }

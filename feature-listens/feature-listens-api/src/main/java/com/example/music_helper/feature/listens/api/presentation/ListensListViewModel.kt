@@ -1,5 +1,6 @@
 package com.example.music_helper.feature.listens.api.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.music_helper.common.api.presentation.State
@@ -95,6 +96,7 @@ class ListensListViewModel(
                 val result = getTrackReviewUseCase(listen)
                 result.fold(
                     onSuccess = { result ->
+                        Log.d("ListensListViewModel", result.toString())
                         _trackReview.update { State.Content(result) }
                     },
                     onFailure = { error ->

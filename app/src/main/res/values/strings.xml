@@ -1,4 +1,5 @@
 <resources>
     <string name="notification_content">Заходите посмотреть данные о прослушиваниях</string>
     <string name="notification_title">%1$s - отличный трек!</string>
+    <string name="app_name">Music Helper</string>
 </resources>

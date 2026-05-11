@@ -54,7 +54,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.example.music_helper.common.api.config.BuildType
+import com.example.music_helper.common.api.build_type.BuildType
 import com.example.music_helper.common.api.model.SettingsSingleton
 import com.example.music_helper.common.api.model.UserSingleton
 import com.example.music_helper.common.api.presentation.State

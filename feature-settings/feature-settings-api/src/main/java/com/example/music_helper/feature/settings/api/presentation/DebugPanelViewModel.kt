@@ -1,8 +1,8 @@
 package com.example.music_helper.feature.settings.api.presentation
 
 import androidx.lifecycle.ViewModel
-import com.example.music_helper.common.api.config.BuildType
-import com.example.music_helper.common.api.config.BuildTypeProvider
+import com.example.music_helper.common.api.build_type.BuildType
+import com.example.music_helper.common.api.build_type.BuildTypeProvider
 import com.example.music_helper.common.api.toggles.TogglesHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

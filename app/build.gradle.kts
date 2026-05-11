@@ -12,7 +12,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.maps"
+        applicationId = "com.example.music_helper"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

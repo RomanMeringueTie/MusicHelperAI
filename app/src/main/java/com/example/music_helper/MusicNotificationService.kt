@@ -15,8 +15,8 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
-import com.example.music_helper.common.api.config.BuildType
-import com.example.music_helper.common.api.config.BuildTypeProvider
+import com.example.music_helper.common.api.build_type.BuildType
+import com.example.music_helper.common.api.build_type.BuildTypeProvider
 import com.example.music_helper.common.api.model.SettingsSingleton
 import com.example.music_helper.common.api.model.UserSingleton
 import com.example.music_helper.common.api.toggles.ListensFilterToggle

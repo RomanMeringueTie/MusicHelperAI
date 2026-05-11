@@ -1,4 +1,4 @@
-package com.example.music_helper.common.api.config
+package com.example.music_helper.common.api.build_type
 
 interface BuildTypeProvider {
     fun getBuildType(): BuildType

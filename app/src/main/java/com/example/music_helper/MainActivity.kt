@@ -52,4 +52,10 @@ class MainActivity : ComponentActivity() {
             saveUserUseCase(userId ?: "")
         }
     }
+
+    private fun initRemoteConfig() {
+        CoroutineScope(Dispatchers.IO).launch {
+            initRemoteConfig()
+        }
+    }
 }

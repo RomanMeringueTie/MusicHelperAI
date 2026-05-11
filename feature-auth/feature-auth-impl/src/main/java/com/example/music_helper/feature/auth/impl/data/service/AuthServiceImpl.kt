@@ -14,7 +14,6 @@ class AuthServiceImpl : AuthService {
             picture = user?.photoUrl.toString()
             userId = user?.uid
         }
-        Log.e("FUUUCK_AUTH", "isGuest = false")
         SettingsSingleton.isGuest = false
     }
 
@@ -25,7 +24,6 @@ class AuthServiceImpl : AuthService {
             name = null
             picture = null
         }
-        Log.e("FUUUCK_AUTH", "isGuest = true")
         SettingsSingleton.isGuest = true
     }
 }
