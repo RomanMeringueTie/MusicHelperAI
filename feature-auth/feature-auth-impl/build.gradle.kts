@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.music_helper.feature.auth.impl"
+    namespace = "com.example.maps.feature.auth.impl"
     compileSdk = 36
     defaultConfig {
         minSdk = 23

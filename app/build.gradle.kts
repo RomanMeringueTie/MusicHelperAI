@@ -5,14 +5,15 @@ plugins {
     id("com.google.devtools.ksp") version "2.1.21-2.0.1"
     id("com.google.gms.google-services")
     id("com.autonomousapps.dependency-analysis")
+    kotlin("plugin.serialization") version "2.3.21"
 }
 
 android {
-    namespace = "com.example.music_helper"
+    namespace = "com.example.maps"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.music_helper"
+        applicationId = "com.example.maps"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -37,8 +38,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
     buildFeatures {
         compose = true

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.music_helper.feature.onboarding.api"
+    namespace = "com.example.maps.feature.onboarding.api"
     compileSdk = 36
     android.buildFeatures.buildConfig = true
     defaultConfig {

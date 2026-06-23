@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.music_helper.feature.listens.impl"
+    namespace = "com.example.maps.feature.listens.impl"
     compileSdk = 36
     defaultConfig {
         minSdk = 21

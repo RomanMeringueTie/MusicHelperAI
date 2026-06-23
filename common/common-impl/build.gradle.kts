@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.music_helper.common.impl"
+    namespace = "com.example.maps.common.impl"
     compileSdk = 36
     kotlin {
         compilerOptions {

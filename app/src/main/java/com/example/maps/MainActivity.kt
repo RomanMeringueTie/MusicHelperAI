@@ -1,0 +1,61 @@
+package com.example.maps
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import com.example.maps.common.api.model.UserSingleton
+import com.example.maps.feature.settings.api.data.datasource.SettingsDataSource
+import com.example.maps.feature.settings.api.domain.SaveUserUseCase
+import com.example.maps.ui.MainScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
+import org.koin.androidx.compose.koinViewModel
+
+class MainActivity : ComponentActivity() {
+
+    private val settingsDataSource: SettingsDataSource by lazy { get() }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        getSettings()
+
+        enableEdgeToEdge()
+        setContent {
+            MainScreen(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = koinViewModel(),
+            )
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        saveSettings()
+    }
+
+    private fun getSettings() {
+        CoroutineScope(Dispatchers.IO).launch {
+            settingsDataSource.get()
+        }
+    }
+
+    private fun saveSettings() {
+        CoroutineScope(Dispatchers.IO).launch {
+            settingsDataSource.save()
+            val userId = UserSingleton.userId
+            val saveUserUseCase: SaveUserUseCase = get()
+            saveUserUseCase(userId ?: "")
+        }
+    }
+
+    private fun initRemoteConfig() {
+        CoroutineScope(Dispatchers.IO).launch {
+            initRemoteConfig()
+        }
+    }
+}

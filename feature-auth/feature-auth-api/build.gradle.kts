@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.music_helper.feature.auth.api"
+    namespace = "com.example.maps.feature.auth.api"
     compileSdk = 36
     android.buildFeatures.buildConfig = true
     defaultConfig {
